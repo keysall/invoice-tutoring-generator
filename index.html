@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Invoice Otomatis</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <!-- Bagian Form Input (Tidak akan ikut tercetak/download PDF) -->
+        <div class="form-section no-print">
+            <h2>Form Input Invoice</h2>
+            <div class="form-group">
+                <label>Nama Layanan / Subjek:</label>
+                <input type="text" id="inputSubjek" value="Math: Functions" oninput="updateInvoice()">
+            </div>
+            <div class="form-group">
+                <label>Nominal Fee (Rp):</label>
+                <input type="number" id="inputFee" value="100000" oninput="updateInvoice()">
+            </div>
+            <div class="form-group">
+                <label>Nomor Invoice:</label>
+                <input type="text" id="inputNoInvoice" value="TTR-097/M13/08/2026" oninput="updateInvoice()">
+            </div>
+            <div class="form-group">
+                <label>Nama Pemberi / Pemilik:</label>
+                <input type="text" id="inputNama" value="Xu Yiyang" oninput="updateInvoice()">
+            </div>
+            <button class="btn-print" onclick="window.print()">Cetak / Simpan PDF</button>
+        </div>
+
+        <!-- Bagian Tampilan Invoice (Sesuai contoh gambar) -->
+        <div class="invoice-box" id="invoiceContent">
+            <div class="invoice-header">
+                <div>
+                    <h1>Invoice</h1>
+                    <p class="subtitle">Tutoring session recap</p>
+                </div>
+                <div class="invoice-meta">
+                    <p id="dispTanggal">Agustus 2026</p>
+                    <p>Invoice No: <span id="dispNoInvoice">TTR-097/M13/08/2026</span></p>
+                </div>
+            </div>
+
+            <table class="invoice-table">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Subjek</th>
+                        <th class="text-right">Fee</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td id="dispSubjek">Math: Functions</td>
+                        <td class="text-right" id="dispFee">Rp100.000</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="2" class="text-right">Total</td>
+                        <td class="text-right" id="dispTotal">Rp100.000</td>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <div class="payment-section">
+                <p class="section-title">METODE PEMBAYARAN</p>
+                <div class="payment-methods">
+                    <div class="qris-box">
+                        <div class="qris-icon">QRIS</div>
+                        <span>Scan untuk bayar</span>
+                    </div>
+                    <div class="bank-box">
+                        <p class="bank-title">Transfer Bank</p>
+                        <p>BCA 1234567890</p>
+                        <p>a.n. <span id="dispNamaBank">Xu Yiyang</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="invoice-footer">
+                <p>Terima kasih! Jika ada pertanyaan, silakan hubungi WA atau email di bawah.</p>
+                <p class="contact-info">WA: 08xx &bull; xuyiyang@students.unnes.ac.id</p>
+                <div class="signature">
+                    <p>Best regards,</p>
+                    <p class="sign-name" id="dispNamaSign">Xu Yiyang</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function formatRupiah(angka) {
+            return 'Rp' + Number(angka).toLocaleString('id-ID');
+        }
+
+        function updateInvoice() {
+            const subjek = document.getElementById('inputSubjek').value;
+            const fee = document.getElementById('inputFee').value;
+            const noInvoice = document.getElementById('inputNoInvoice').value;
+            const nama = document.getElementById('inputNama').value;
+
+            document.getElementById('dispSubjek').innerText = subjek;
+            document.getElementById('dispFee').innerText = formatRupiah(fee);
+            document.getElementById('dispTotal').innerText = formatRupiah(fee);
+            document.getElementById('dispNoInvoice').innerText = noInvoice;
+            document.getElementById('dispNamaBank').innerText = nama;
+            document.getElementById('dispNamaSign').innerText = nama;
+        }
+    </script>
+</body>
+</html>

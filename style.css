@@ -1,0 +1,226 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #121212;
+    color: #e0e0e0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Form Styling */
+.form-section {
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.form-section h2 {
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+.form-group {
+    margin-bottom: 12px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    color: #b0b0b0;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 8px 12px;
+    background: #2a2a2a;
+    border: 1px solid #444;
+    color: #fff;
+    border-radius: 4px;
+}
+
+.btn-print {
+    background: #ffffff;
+    color: #121212;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btn-print:hover {
+    background: #dcdcdc;
+}
+
+/* Invoice Box Styling */
+.invoice-box {
+    background-color: #18181b;
+    border: 1px solid #27272a;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.invoice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #27272a;
+    padding-bottom: 20px;
+}
+
+.invoice-header h1 {
+    font-size: 2rem;
+    color: #ffffff;
+}
+
+.subtitle {
+    color: #a1a1aa;
+    font-size: 0.95rem;
+}
+
+.invoice-meta {
+    text-align: right;
+    color: #a1a1aa;
+    font-size: 0.9rem;
+}
+
+/* Table Styling */
+.invoice-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+.invoice-table th, .invoice-table td {
+    padding: 12px 8px;
+    border-bottom: 1px solid #27272a;
+    font-size: 0.95rem;
+}
+
+.invoice-table th {
+    color: #a1a1aa;
+    font-weight: 500;
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.invoice-table tfoot td {
+    font-weight: bold;
+    border-top: 1px solid #27272a;
+    border-bottom: none;
+}
+
+/* Payment Section */
+.payment-section {
+    margin-bottom: 40px;
+}
+
+.section-title {
+    font-size: 0.8rem;
+    color: #71717a;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+}
+
+.payment-methods {
+    display: flex;
+    gap: 20px;
+}
+
+.qris-box {
+    background: #27272a;
+    border: 1px solid #3f3f46;
+    padding: 15px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 200px;
+}
+
+.qris-icon {
+    background: #18181b;
+    padding: 10px;
+    font-weight: bold;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.bank-box {
+    padding: 5px 0;
+}
+
+.bank-title {
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.bank-box p {
+    color: #d4d4d8;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Footer Section */
+.invoice-footer {
+    border-top: 1px solid #27272a;
+    padding-top: 20px;
+    position: relative;
+}
+
+.invoice-footer p {
+    color: #a1a1aa;
+    font-size: 0.9rem;
+}
+
+.contact-info {
+    margin-top: 5px;
+}
+
+.signature {
+    text-align: right;
+    margin-top: -30px;
+}
+
+.sign-name {
+    font-family: 'Georgia', serif;
+    font-size: 1.8rem;
+    font-style: italic;
+    color: #ffffff;
+    margin-top: 5px;
+}
+
+/* Print settings (Menyembunyikan form saat dicetak/PDF) */
+@media print {
+    body {
+        background-color: #18181b;
+        color: #e0e0e0;
+    }
+    .no-print {
+        display: none !important;
+    }
+    .invoice-box {
+        border: none;
+        box-shadow: none;
+        padding: 0;
+    }
+}
