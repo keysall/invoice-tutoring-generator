@@ -9,6 +9,7 @@ body {
     background-color: #121212;
     color: #e0e0e0;
     padding: 20px;
+    transition: background 0.3s, color 0.3s;
 }
 
 .container {
@@ -30,65 +31,6 @@ body {
     font-size: 1.2rem;
     z-index: 1000;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-}
-
-/* Style saat Mode Terang (Light Mode) Aktif */
-body.light-mode {
-    background-color: #f4f4f5;
-    color: #18181b;
-}
-
-body.light-mode .form-section {
-    background: #ffffff;
-    border: 1px solid #e4e4e7;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
-
-body.light-mode .form-section h2, 
-body.light-mode .form-group label {
-    color: #27272a;
-}
-
-body.light-mode .form-group input, 
-body.light-mode .form-group select {
-    background: #f9f9fb;
-    border: 1px solid #d4d4d8;
-    color: #18181b;
-}
-
-body.light-mode .invoice-box {
-    background-color: #ffffff;
-    border: 1px solid #e4e4e7;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-}
-
-body.light-mode .invoice-header h1,
-body.light-mode .sign-name,
-body.light-mode .invoice-table tfoot td {
-    color: #18181b;
-}
-
-body.light-mode .invoice-header,
-body.light-mode .invoice-table th, 
-body.light-mode .invoice-table td,
-body.light-mode .invoice-footer {
-    border-color: #e4e4e7;
-}
-
-body.light-mode .qris-box {
-    background: #f4f4f5;
-    border-color: #d4d4d8;
-}
-
-body.light-mode .qris-icon {
-    background: #ffffff;
-    color: #18181b;
-}
-
-body.light-mode .theme-toggle {
-    background: #ffffff;
-    color: #18181b;
-    border-color: #d4d4d8;
 }
 
 /* Form Styling */
@@ -117,7 +59,7 @@ body.light-mode .theme-toggle {
     color: #b0b0b0;
 }
 
-.form-group input {
+.form-group input, .form-group select {
     width: 100%;
     padding: 8px 12px;
     background: #2a2a2a;
@@ -219,29 +161,18 @@ body.light-mode .theme-toggle {
 .payment-methods {
     display: flex;
     gap: 20px;
+    align-items: center;
 }
 
 .qris-box {
     background: #27272a;
     border: 1px solid #3f3f46;
-    padding: 15px;
+    padding: 12px 15px;
     border-radius: 8px;
     display: flex;
     align-items: center;
     gap: 12px;
-    width: 200px;
-}
-
-.qris-icon {
-    background: #18181b;
-    padding: 10px;
-    font-weight: bold;
-    border-radius: 4px;
-    font-size: 0.8rem;
-}
-
-.bank-box {
-    padding: 5px 0;
+    cursor: pointer;
 }
 
 .bank-title {
@@ -259,7 +190,6 @@ body.light-mode .theme-toggle {
 .invoice-footer {
     border-top: 1px solid #27272a;
     padding-top: 20px;
-    position: relative;
 }
 
 .invoice-footer p {
@@ -284,51 +214,40 @@ body.light-mode .theme-toggle {
     margin-top: 5px;
 }
 
-/* Print settings (Menyembunyikan form saat dicetak/PDF) */
-@media print {
-    body {
-        background-color: #18181b;
-        color: #e0e0e0;
-    }
-    .no-print {
-        display: none !important;
-    }
-    .invoice-box {
-        border: none;
-        box-shadow: none;
-        padding: 0;
-    }
-}
-
-/* Styling Warna Pastel untuk Tabel */
+/* Warna Pastel Tabel */
 .invoice-box.pastel-merah .invoice-table th { background-color: rgba(254, 202, 202, 0.15); color: #f87171; border-radius: 4px; }
 .invoice-box.pastel-hijau .invoice-table th { background-color: rgba(187, 247, 208, 0.15); color: #4ade80; border-radius: 4px; }
 .invoice-box.pastel-biru .invoice-table th { background-color: rgba(191, 219, 254, 0.15); color: #60a5fa; border-radius: 4px; }
 .invoice-box.pastel-kuning .invoice-table th { background-color: rgba(254, 240, 138, 0.15); color: #facc15; border-radius: 4px; }
 .invoice-box.pastel-ungu .invoice-table th { background-color: rgba(233, 213, 255, 0.15); color: #c084fc; border-radius: 4px; }
 
-/* Pengaturan saat dicetak atau disimpan ke PDF */
-@media print {
-    /* Sembunyikan form input dan tombol tema saat diprint */
-    .form-section, 
-    .theme-toggle {
-        display: none !important;
-    }
+/* Light Mode Styling */
+body.light-mode { background-color: #f4f4f5; color: #18181b; }
+body.light-mode .form-section { background: #ffffff; border: 1px solid #e4e4e7; }
+body.light-mode .form-section h2, body.light-mode .form-group label { color: #27272a; }
+body.light-mode .form-group input, body.light-mode .form-group select { background: #f9f9fb; border: 1px solid #d4d4d8; color: #18181b; }
+body.light-mode .invoice-box { background-color: #ffffff; border: 1px solid #e4e4e7; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+body.light-mode .invoice-header h1, body.light-mode .sign-name, body.light-mode .invoice-table tfoot td { color: #18181b; }
+body.light-mode .invoice-header, body.light-mode .invoice-table th, body.light-mode .invoice-table td, body.light-mode .invoice-footer { border-color: #e4e4e7; }
+body.light-mode .qris-box { background: #f4f4f5; border-color: #d4d4d8; }
+body.light-mode .theme-toggle { background: #ffffff; color: #18181b; border-color: #d4d4d8; }
 
-    /* Pastikan background body tetap gelap atau sesuai pilihan */
+/* Print Settings (Penyaring agar hanya invoice yang tercetak) */
+@media print {
     body {
         background-color: #18181b !important;
         color: #e0e0e0 !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
     }
-
-    /* Tampilkan kotak invoice dengan utuh tanpa garis pinggir browser */
+    .form-section, .theme-toggle {
+        display: none !important;
+    }
     .invoice-box {
-        background-color: #18181b !important;
         border: none !important;
         box-shadow: none !important;
         padding: 0 !important;
         width: 100% !important;
+        margin: 0 !important;
     }
 }
