@@ -13,31 +13,34 @@
     <div class="main-layout">
         <!-- FORM INPUT DI SEBELAH KIRI -->
         <div class="form-section no-print">
-            <h2>Form Input Invoice</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <h2 style="margin: 0;">Form Input Invoice</h2>
+                <button onclick="resetData()" title="Reset ke Default" style="background: #7f1d1d; color: #fca5a5; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer;">Reset</button>
+            </div>
             
             <div class="form-group">
                 <label>Bulan / Tanggal Invoice:</label>
-                <input type="text" id="inputTanggal" value="Agustus 2026" oninput="updateInvoice()">
+                <input type="text" id="inputTanggal" value="Agustus 2026" oninput="saveAndRender()">
             </div>
             <div class="form-group">
                 <label>Nomor Invoice:</label>
-                <input type="text" id="inputNoInvoice" value="TTR-097/M13/08/2026" oninput="updateInvoice()">
+                <input type="text" id="inputNoInvoice" value="TTR-097/M13/08/2026" oninput="saveAndRender()">
             </div>
             <div class="form-group">
                 <label>Nama Pemberi / Pemilik:</label>
-                <input type="text" id="inputNama" value="Xu Yiyang" oninput="updateInvoice()">
+                <input type="text" id="inputNama" value="Xu Yiyang" oninput="saveAndRender()">
             </div>
             <div class="form-group">
                 <label>Info Kontak & Email (Footer):</label>
-                <input type="text" id="inputKontak" value="WA: 08xx • xuyiyang@students.unnes.ac.id" oninput="updateInvoice()">
+                <input type="text" id="inputKontak" value="WA: 08xx • xuyiyang@students.unnes.ac.id" oninput="saveAndRender()">
             </div>
             <div class="form-group">
                 <label>Info Bank & Nomor Rekening:</label>
-                <input type="text" id="inputBank" value="BCA 1234567890" oninput="updateInvoice()">
+                <input type="text" id="inputBank" value="BCA 1234567890" oninput="saveAndRender()">
             </div>
             <div class="form-group">
                 <label>Pilihan Warna Tabel (Pastel):</label>
-                <select id="inputWarnaTabel" onchange="ubahWarnaTabel()">
+                <select id="inputWarnaTabel" onchange="ubahWarnaTabel(); saveAndRender();">
                     <option value="default">Default (Gelap/Netral)</option>
                     <option value="pastel-merah">Merah Pastel</option>
                     <option value="pastel-hijau">Hijau Pastel</option>
@@ -121,18 +124,63 @@
     </div>
 
     <script>
-        let items = [
-            { notes: 'Sesi 1', subjek: 'Math: Functions', addFee: 0, fee: 100000 }
-        ];
+        let defaultData = {
+            tanggal: "Agustus 2026",
+            noInvoice: "TTR-097/M13/08/2026",
+            nama: "Xu Yiyang",
+            kontak: "WA: 08xx • xuyiyang@students.unnes.ac.id",
+            bank: "BCA 1234567890",
+            warnaTabel: "default",
+            qrisImg: "",
+            items: [
+                { notes: 'Sesi 1', subjek: 'Math: Functions', addFee: 0, fee: 100000 }
+            ]
+        };
 
-        function formatRupiah(angka) {
-            return 'Rp' + Number(angka).toLocaleString('id-ID');
+        function loadData() {
+            let saved = localStorage.getItem('invoice_progress_data');
+            if (saved) {
+                try {
+                    return JSON.parse(saved);
+                } catch(e) {
+                    return defaultData;
+                }
+            }
+            return defaultData;
+        }
+
+        let appData = loadData();
+
+        // Masukkan data tersimpan ke form saat pertama buka
+        document.getElementById('inputTanggal').value = appData.tanggal;
+        document.getElementById('inputNoInvoice').value = appData.noInvoice;
+        document.getElementById('inputNama').value = appData.nama;
+        document.getElementById('inputKontak').value = appData.kontak;
+        document.getElementById('inputBank').value = appData.bank;
+        document.getElementById('inputWarnaTabel').value = appData.warnaTabel;
+        if(appData.qrisImg) {
+            document.getElementById('dispQrisImg').src = appData.qrisImg;
+        }
+        ubahWarnaTabel();
+
+        function saveAndRender() {
+            // Ambil nilai terbaru dari form
+            appData.tanggal = document.getElementById('inputTanggal').value;
+            appData.noInvoice = document.getElementById('inputNoInvoice').value;
+            appData.nama = document.getElementById('inputNama').value;
+            appData.kontak = document.getElementById('inputKontak').value;
+            appData.bank = document.getElementById('inputBank').value;
+            appData.warnaTabel = document.getElementById('inputWarnaTabel').value;
+
+            // Simpan ke localStorage
+            localStorage.setItem('invoice_progress_data', JSON.stringify(appData));
+
+            renderApp();
         }
 
         function renderApp() {
-            // Render Form Inputs untuk Baris Item
             let formHtml = '';
-            items.forEach((item, index) => {
+            appData.items.forEach((item, index) => {
                 formHtml += `
                     <div class="item-form-row">
                         <small>Baris ${index + 1}</small>
@@ -140,16 +188,15 @@
                         <input type="text" placeholder="Subjek" value="${item.subjek}" oninput="updateItem(${index}, 'subjek', this.value)">
                         <input type="number" placeholder="Add Fee" value="${item.addFee}" oninput="updateItem(${index}, 'addFee', this.value)">
                         <input type="number" placeholder="Fee Tutor" value="${item.fee}" oninput="updateItem(${index}, 'fee', this.value)">
-                        ${items.length > 1 ? `<button class="btn-del" onclick="hapusBaris(${index})">Hapus</button>` : ''}
+                        ${appData.items.length > 1 ? `<button class="btn-del" onclick="hapusBaris(${index})">Hapus</button>` : ''}
                     </div>
                 `;
             });
             document.getElementById('itemFormContainer').innerHTML = formHtml;
 
-            // Render Tabel Preview
             let tableHtml = '';
             let grandTotal = 0;
-            items.forEach((item, index) => {
+            appData.items.forEach((item, index) => {
                 let subTotal = Number(item.addFee) + Number(item.fee);
                 grandTotal += subTotal;
                 tableHtml += `
@@ -165,39 +212,39 @@
             document.getElementById('invoiceTableBody').innerHTML = tableHtml;
             document.getElementById('dispTotal').innerText = formatRupiah(grandTotal);
 
-            // Update teks umum
-            document.getElementById('dispTanggal').innerText = document.getElementById('inputTanggal').value;
-            document.getElementById('dispNoInvoice').innerText = document.getElementById('inputNoInvoice').value;
-            let nama = document.getElementById('inputNama').value;
-            document.getElementById('dispNamaBank').innerText = nama;
-            document.getElementById('dispNamaSign').innerText = nama;
-            document.getElementById('dispBank').innerText = document.getElementById('inputBank').value;
-            document.getElementById('dispKontak').innerText = document.getElementById('inputKontak').value;
+            document.getElementById('dispTanggal').innerText = appData.tanggal;
+            document.getElementById('dispNoInvoice').innerText = appData.noInvoice;
+            document.getElementById('dispNamaBank').innerText = appData.nama;
+            document.getElementById('dispNamaSign').innerText = appData.nama;
+            document.getElementById('dispBank').innerText = appData.bank;
+            document.getElementById('dispKontak').innerText = appData.kontak;
+        }
+
+        function formatRupiah(angka) {
+            return 'Rp' + Number(angka).toLocaleString('id-ID');
         }
 
         function tambahBarisItem() {
-            items.push({ notes: '-', subjek: 'Materi Baru', addFee: 0, fee: 50000 });
-            renderApp();
+            appData.items.push({ notes: '-', subjek: 'Materi Baru', addFee: 0, fee: 50000 });
+            saveAndRender();
         }
 
         function hapusBaris(index) {
-            items.splice(index, 1);
-            renderApp();
+            appData.items.splice(index, 1);
+            saveAndRender();
         }
 
         function updateItem(index, field, value) {
-            items[index][field] = value;
-            renderApp();
-        }
-
-        function updateInvoice() {
-            renderApp();
+            appData.items[index][field] = value;
+            saveAndRender();
         }
 
         function loadQrisImage(event) {
             const reader = new FileReader();
             reader.onload = function(){
+                appData.qrisImg = reader.result;
                 document.getElementById('dispQrisImg').src = reader.result;
+                saveAndRender();
             };
             reader.readAsDataURL(event.target.files[0]);
         }
@@ -217,7 +264,13 @@
             btn.innerText = document.body.classList.contains('light-mode') ? '☀️' : '🌙';
         }
 
-        // Load awal
+        function resetData() {
+            if(confirm('Reset semua data kembali ke awal?')) {
+                localStorage.removeItem('invoice_progress_data');
+                location.reload();
+            }
+        }
+
         renderApp();
     </script>
 </body>
