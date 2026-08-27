@@ -8,20 +8,16 @@
 </head>
 <body>
 
-    <!-- Tombol Ganti Tema (Matahari / Bulan) -->
     <button class="theme-toggle" onclick="toggleTheme()" title="Ganti Tema">🌙</button>
 
-    <div class="container">
-        <!-- Bagian Form Input (Akan otomatis disembunyikan saat diprint) -->
+    <div class="main-layout">
+        <!-- FORM INPUT DI SEBELAH KIRI -->
         <div class="form-section no-print">
             <h2>Form Input Invoice</h2>
+            
             <div class="form-group">
-                <label>Nama Layanan / Subjek:</label>
-                <input type="text" id="inputSubjek" value="Math: Functions" oninput="updateInvoice()">
-            </div>
-            <div class="form-group">
-                <label>Nominal Fee (Rp):</label>
-                <input type="number" id="inputFee" value="100000" oninput="updateInvoice()">
+                <label>Bulan / Tanggal Invoice:</label>
+                <input type="text" id="inputTanggal" value="Agustus 2026" oninput="updateInvoice()">
             </div>
             <div class="form-group">
                 <label>Nomor Invoice:</label>
@@ -30,6 +26,14 @@
             <div class="form-group">
                 <label>Nama Pemberi / Pemilik:</label>
                 <input type="text" id="inputNama" value="Xu Yiyang" oninput="updateInvoice()">
+            </div>
+            <div class="form-group">
+                <label>Info Kontak & Email (Footer):</label>
+                <input type="text" id="inputKontak" value="WA: 08xx • xuyiyang@students.unnes.ac.id" oninput="updateInvoice()">
+            </div>
+            <div class="form-group">
+                <label>Info Bank & Nomor Rekening:</label>
+                <input type="text" id="inputBank" value="BCA 1234567890" oninput="updateInvoice()">
             </div>
             <div class="form-group">
                 <label>Pilihan Warna Tabel (Pastel):</label>
@@ -42,18 +46,25 @@
                     <option value="pastel-ungu">Ungu Pastel</option>
                 </select>
             </div>
+
+            <hr style="border: 0; border-top: 1px solid #444; margin: 15px 0;">
+            
+            <h3>Daftar Baris Item</h3>
+            <div id="itemFormContainer"></div>
+            <button class="btn-add" onclick="tambahBarisItem()">+ Tambah Baris</button>
+
             <button class="btn-print" onclick="window.print()">Cetak / Simpan PDF</button>
         </div>
 
-        <!-- Bagian Tampilan Invoice -->
+        <!-- PREVIEW INVOICE DI SEBELAH KANAN -->
         <div class="invoice-box" id="invoiceContent">
             <div class="invoice-header">
                 <div>
-                    <h1>Invoice</h1>
-                    <p class="subtitle">Tutoring session recap</p>
+                    <h1 class="inv-title">INVOICE</h1>
+                    <p class="subtitle" id="dispSubt">Tutoring session recap</p>
                 </div>
                 <div class="invoice-meta">
-                    <p id="dispTanggal">Agustus 2026</p>
+                    <p id="dispTanggal" class="fw-bold fs-large">Agustus 2026</p>
                     <p>Invoice No: <span id="dispNoInvoice">TTR-097/M13/08/2026</span></p>
                 </div>
             </div>
@@ -62,21 +73,19 @@
                 <thead>
                     <tr>
                         <th>No</th>
+                        <th>Notes</th>
                         <th>Subjek</th>
-                        <th class="text-right">Fee</th>
+                        <th>Additional Fee</th>
+                        <th class="text-right">Fee Tutor</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td id="dispSubjek">Math: Functions</td>
-                        <td class="text-right" id="dispFee">Rp100.000</td>
-                    </tr>
+                <tbody id="invoiceTableBody">
+                    <!-- Dinamis dari JS -->
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="2" class="text-right">Total</td>
-                        <td class="text-right" id="dispTotal">Rp100.000</td>
+                        <td colspan="4" class="text-right">Total</td>
+                        <td class="text-right" id="dispTotal">Rp0</td>
                     </tr>
                 </tfoot>
             </table>
@@ -85,16 +94,16 @@
                 <p class="section-title">METODE PEMBAYARAN</p>
                 <div class="payment-methods">
                     <div class="qris-box" onclick="document.getElementById('inputQrisFile').click()" title="Klik untuk ganti gambar QRIS">
-                        <img id="dispQrisImg" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='1.5'><rect width='18' height='18' x='3' y='3' rx='2'/><path d='M7 7h3v3H7zM14 7h3v3h-3zM7 14h3v3H7z'/></svg>" alt="QRIS" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
+                        <img id="dispQrisImg" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='1.5'><rect width='18' height='18' x='3' y='3' rx='2'/><path d='M7 7h3v3H7zM14 7h3v3h-3zM7 14h3v3H7z'/></svg>" alt="QRIS" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
                         <div>
-                            <span style="font-size: 0.85rem; display: block; font-weight: bold;">QRIS</span>
-                            <span style="font-size: 0.7rem; color: #a1a1aa;">Klik upload</span>
+                            <span style="font-size: 0.8rem; display: block; font-weight: bold;">QRIS</span>
+                            <span style="font-size: 0.65rem; color: #a1a1aa;">Klik upload</span>
                         </div>
                         <input type="file" id="inputQrisFile" accept="image/*" style="display: none;" onchange="loadQrisImage(event)">
                     </div>
                     <div class="bank-box">
                         <p class="bank-title">Transfer Bank</p>
-                        <p>BCA 1234567890</p>
+                        <p id="dispBank">BCA 1234567890</p>
                         <p>a.n. <span id="dispNamaBank">Xu Yiyang</span></p>
                     </div>
                 </div>
@@ -102,7 +111,7 @@
 
             <div class="invoice-footer">
                 <p>Terima kasih! Jika ada pertanyaan, silakan hubungi WA atau email di bawah.</p>
-                <p class="contact-info">WA: 08xx &bull; xuyiyang@students.unnes.ac.id</p>
+                <p class="contact-info" id="dispKontak">WA: 08xx • xuyiyang@students.unnes.ac.id</p>
                 <div class="signature">
                     <p>Best regards,</p>
                     <p class="sign-name" id="dispNamaSign">Xu Yiyang</p>
@@ -112,29 +121,83 @@
     </div>
 
     <script>
+        let items = [
+            { notes: 'Sesi 1', subjek: 'Math: Functions', addFee: 0, fee: 100000 }
+        ];
+
         function formatRupiah(angka) {
             return 'Rp' + Number(angka).toLocaleString('id-ID');
         }
 
-        function updateInvoice() {
-            const subjek = document.getElementById('inputSubjek').value;
-            const fee = document.getElementById('inputFee').value;
-            const noInvoice = document.getElementById('inputNoInvoice').value;
-            const nama = document.getElementById('inputNama').value;
+        function renderApp() {
+            // Render Form Inputs untuk Baris Item
+            let formHtml = '';
+            items.forEach((item, index) => {
+                formHtml += `
+                    <div class="item-form-row">
+                        <small>Baris ${index + 1}</small>
+                        <input type="text" placeholder="Notes" value="${item.notes}" oninput="updateItem(${index}, 'notes', this.value)">
+                        <input type="text" placeholder="Subjek" value="${item.subjek}" oninput="updateItem(${index}, 'subjek', this.value)">
+                        <input type="number" placeholder="Add Fee" value="${item.addFee}" oninput="updateItem(${index}, 'addFee', this.value)">
+                        <input type="number" placeholder="Fee Tutor" value="${item.fee}" oninput="updateItem(${index}, 'fee', this.value)">
+                        ${items.length > 1 ? `<button class="btn-del" onclick="hapusBaris(${index})">Hapus</button>` : ''}
+                    </div>
+                `;
+            });
+            document.getElementById('itemFormContainer').innerHTML = formHtml;
 
-            document.getElementById('dispSubjek').innerText = subjek;
-            document.getElementById('dispFee').innerText = formatRupiah(fee);
-            document.getElementById('dispTotal').innerText = formatRupiah(fee);
-            document.getElementById('dispNoInvoice').innerText = noInvoice;
+            // Render Tabel Preview
+            let tableHtml = '';
+            let grandTotal = 0;
+            items.forEach((item, index) => {
+                let subTotal = Number(item.addFee) + Number(item.fee);
+                grandTotal += subTotal;
+                tableHtml += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${item.notes}</td>
+                        <td>${item.subjek}</td>
+                        <td>${formatRupiah(item.addFee)}</td>
+                        <td class="text-right">${formatRupiah(item.fee)}</td>
+                    </tr>
+                `;
+            });
+            document.getElementById('invoiceTableBody').innerHTML = tableHtml;
+            document.getElementById('dispTotal').innerText = formatRupiah(grandTotal);
+
+            // Update teks umum
+            document.getElementById('dispTanggal').innerText = document.getElementById('inputTanggal').value;
+            document.getElementById('dispNoInvoice').innerText = document.getElementById('inputNoInvoice').value;
+            let nama = document.getElementById('inputNama').value;
             document.getElementById('dispNamaBank').innerText = nama;
             document.getElementById('dispNamaSign').innerText = nama;
+            document.getElementById('dispBank').innerText = document.getElementById('inputBank').value;
+            document.getElementById('dispKontak').innerText = document.getElementById('inputKontak').value;
+        }
+
+        function tambahBarisItem() {
+            items.push({ notes: '-', subjek: 'Materi Baru', addFee: 0, fee: 50000 });
+            renderApp();
+        }
+
+        function hapusBaris(index) {
+            items.splice(index, 1);
+            renderApp();
+        }
+
+        function updateItem(index, field, value) {
+            items[index][field] = value;
+            renderApp();
+        }
+
+        function updateInvoice() {
+            renderApp();
         }
 
         function loadQrisImage(event) {
             const reader = new FileReader();
             reader.onload = function(){
-                const output = document.getElementById('dispQrisImg');
-                output.src = reader.result;
+                document.getElementById('dispQrisImg').src = reader.result;
             };
             reader.readAsDataURL(event.target.files[0]);
         }
@@ -151,12 +214,11 @@
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
             const btn = document.querySelector('.theme-toggle');
-            if (document.body.classList.contains('light-mode')) {
-                btn.innerText = '☀️';
-            } else {
-                btn.innerText = '🌙';
-            }
+            btn.innerText = document.body.classList.contains('light-mode') ? '☀️' : '🌙';
         }
+
+        // Load awal
+        renderApp();
     </script>
 </body>
 </html>
