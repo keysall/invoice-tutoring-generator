@@ -285,30 +285,44 @@ body.light-mode .invoice-header, body.light-mode .invoice-table th, body.light-m
 body.light-mode .qris-box { background: #f4f4f5; border-color: #d4d4d8; }
 body.light-mode .theme-toggle { background: #ffffff; color: #18181b; border-color: #d4d4d8; }
 
-/* Print Settings yang Diperbaiki */
+/* ==== PRINT SETTINGS (SIMPAN PDF) ==== */
+@page {
+    size: A4 portrait;
+    margin: 0; /* Menghapus margin putih bawaan browser dan teks URL/Link */
+}
+
 @media print {
-    body {
-        background-color: #18181b !important;
-        color: #e0e0e0 !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+    html, body {
+        width: 100% !important;
+        height: 100% !important;
+        margin: 0 !important;
         padding: 0 !important;
+        background-color: #18181b !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
     }
+    
     .form-section, .theme-toggle {
         display: none !important;
     }
+    
     .main-layout {
         display: block !important;
-        max-width: 100% !important;
-        margin: 0 !important;
-    }
-    .invoice-box {
-        border: none !important;
-        box-shadow: none !important;
-        padding: 10px !important;
         width: 100% !important;
         max-width: 100% !important;
         margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .invoice-box {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 100vh !important; /* Membuat background full ke bawah */
+        border: none !important;
+        border-radius: 0 !important; /* Menghilangkan sudut melengkung */
+        box-shadow: none !important;
+        margin: 0 !important;
+        padding: 1.5cm !important; /* Jarak proporsional teks dari tepi kertas */
         background-color: #18181b !important;
     }
 }
