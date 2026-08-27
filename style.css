@@ -306,3 +306,29 @@ body.light-mode .theme-toggle {
 .invoice-box.pastel-biru .invoice-table th { background-color: rgba(191, 219, 254, 0.15); color: #60a5fa; border-radius: 4px; }
 .invoice-box.pastel-kuning .invoice-table th { background-color: rgba(254, 240, 138, 0.15); color: #facc15; border-radius: 4px; }
 .invoice-box.pastel-ungu .invoice-table th { background-color: rgba(233, 213, 255, 0.15); color: #c084fc; border-radius: 4px; }
+
+/* Pengaturan saat dicetak atau disimpan ke PDF */
+@media print {
+    /* Sembunyikan form input dan tombol tema saat diprint */
+    .form-section, 
+    .theme-toggle {
+        display: none !important;
+    }
+
+    /* Pastikan background body tetap gelap atau sesuai pilihan */
+    body {
+        background-color: #18181b !important;
+        color: #e0e0e0 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* Tampilkan kotak invoice dengan utuh tanpa garis pinggir browser */
+    .invoice-box {
+        background-color: #18181b !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+}
