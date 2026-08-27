@@ -9,6 +9,13 @@
 <body>
 
     <div class="container">
+    <!-- Tombol Ganti Tema -->
+    <button class="theme-toggle" onclick="toggleTheme()" title="Ganti Tema">🌙</button>
+
+    <!-- Bagian Form Input -->
+    <div class="form-section no-print">
+       
+    <div class="container">
         <!-- Bagian Form Input (Tidak akan ikut tercetak/download PDF) -->
         <div class="form-section no-print">
             <h2>Form Input Invoice</h2>
@@ -112,5 +119,19 @@
             document.getElementById('dispNamaSign').innerText = nama;
         }
     </script>
+        
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const btn = document.querySelector('.theme-toggle');
+            if (document.body.classList.contains('light-mode')) {
+                btn.innerText = '☀️';
+            } else {
+                btn.innerText = '🌙';
+            }
+        }
+    </script>
+        
 </body>
+        
 </html>
