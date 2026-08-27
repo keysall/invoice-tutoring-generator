@@ -285,25 +285,30 @@ body.light-mode .invoice-header, body.light-mode .invoice-table th, body.light-m
 body.light-mode .qris-box { background: #f4f4f5; border-color: #d4d4d8; }
 body.light-mode .theme-toggle { background: #ffffff; color: #18181b; border-color: #d4d4d8; }
 
-/* Print Settings */
+/* Print Settings yang Diperbaiki */
 @media print {
     body {
         background-color: #18181b !important;
         color: #e0e0e0 !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
+        padding: 0 !important;
     }
     .form-section, .theme-toggle {
         display: none !important;
     }
     .main-layout {
         display: block !important;
+        max-width: 100% !important;
+        margin: 0 !important;
     }
     .invoice-box {
         border: none !important;
         box-shadow: none !important;
-        padding: 0 !important;
+        padding: 10px !important;
         width: 100% !important;
+        max-width: 100% !important;
         margin: 0 !important;
+        background-color: #18181b !important;
     }
 }
