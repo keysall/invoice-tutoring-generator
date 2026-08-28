@@ -9,6 +9,15 @@ let items = [
 ];
 let qrisDataUrl = null;
 
+// ============ Additional Mode ============
+// OFF (default): one combined table (Fee Tutor + Additional Fee per row) —
+// exactly the original behavior. ON: two separate tables — Additional Fee
+// becomes its own independent list, not tied to Fee Tutor rows.
+let additionalMode = false;
+let additionalItems = [
+  { date: "", type: "", price: 0, note: "" },
+];
+
 // ============ Helpers ============
 function formatRupiah(n) {
   n = Number(n) || 0;
@@ -126,6 +135,42 @@ function renderItemRows() {
   });
 }
 
+function renderAdditionalItemRows() {
+  const list = el("additionalItemsList");
+  if (!list) return;
+  list.innerHTML = "";
+  additionalItems.forEach((item, idx) => {
+    const row = document.createElement("div");
+    row.className = "item-row item-row-additional";
+    row.innerHTML = `
+      <input class="f-type" type="text" data-idx="${idx}" data-field="type" placeholder="e.g. Textbook / titipan item" value="${escapeAttr(item.type || "")}">
+      <input class="f-date" type="date" data-idx="${idx}" data-field="date" value="${escapeAttr(item.date || "")}">
+      <input class="f-price" type="number" min="0" step="1000" data-idx="${idx}" data-field="price" value="${item.price || 0}">
+      <input class="f-note" type="text" data-idx="${idx}" data-field="note" placeholder="Note" value="${escapeAttr(item.note || "")}">
+      <button type="button" class="item-remove" data-idx="${idx}" aria-label="Remove row">✕</button>
+    `;
+    list.appendChild(row);
+  });
+
+  list.querySelectorAll("input").forEach((input) => {
+    input.addEventListener("input", (e) => {
+      const idx = Number(e.target.dataset.idx);
+      const field = e.target.dataset.field;
+      const isText = field === "type" || field === "note" || field === "date";
+      additionalItems[idx][field] = isText ? e.target.value : Number(e.target.value);
+      renderPreview();
+    });
+  });
+  list.querySelectorAll(".item-remove").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const idx = Number(e.currentTarget.dataset.idx);
+      additionalItems.splice(idx, 1);
+      renderAdditionalItemRows();
+      renderPreview();
+    });
+  });
+}
+
 function escapeAttr(str) {
   return String(str).replace(/"/g, "&quot;");
 }
@@ -140,6 +185,21 @@ el("addItemBtn").addEventListener("click", () => {
   renderItemRows();
   renderPreview();
 });
+if (el("addAdditionalItemBtn")) {
+  el("addAdditionalItemBtn").addEventListener("click", () => {
+    additionalItems.push({ date: "", type: "", price: 0, note: "" });
+    renderAdditionalItemRows();
+    renderPreview();
+  });
+}
+
+if (el("additionalModeToggle")) {
+  el("additionalModeToggle").addEventListener("change", (e) => {
+    additionalMode = e.target.checked;
+    if (el("additionalFeeGroup")) el("additionalFeeGroup").hidden = !additionalMode;
+    renderPreview();
+  });
+}
 
 // ============ QRIS upload ============
 el("qrisUpload").addEventListener("change", (e) => {
@@ -161,6 +221,48 @@ el("removeQrisBtn").addEventListener("click", () => {
 });
 
 // ============ Preview render ============
+function renderInvoiceTable() {
+  const container = el("tableScroll");
+  if (!container) return;
+
+  if (!additionalMode) {
+    container.innerHTML = `
+      <table class="sheet-table">
+        <thead>
+          <tr>
+            <th>No</th><th>Date</th><th>Subject / Session Tutor</th><th>Note</th>
+            <th class="num">Fee Tutor</th><th class="num">Additional Fee</th>
+          </tr>
+        </thead>
+        <tbody id="prevItemsBody"></tbody>
+        <tfoot>
+          <tr class="total-row"><td colspan="5">Total Fee</td><td class="num" id="prevTotal">Rp0</td></tr>
+        </tfoot>
+      </table>
+    `;
+  } else {
+    container.innerHTML = `
+      <div class="section-label">Fee Tutor</div>
+      <table class="sheet-table sheet-table-split">
+        <thead>
+          <tr><th>No</th><th>Date</th><th>Subject / Session Tutor</th><th>Note</th><th class="num">Fee Tutor</th></tr>
+        </thead>
+        <tbody id="prevFeeBody"></tbody>
+        <tfoot><tr class="total-row"><td colspan="4">Total Fee Tutor</td><td class="num" id="prevFeeTotal">Rp0</td></tr></tfoot>
+      </table>
+      <div class="section-label" style="margin-top:20px;">Additional Fee</div>
+      <table class="sheet-table sheet-table-split">
+        <thead>
+          <tr><th>No</th><th>Date</th><th>Type</th><th>Note</th><th class="num">Price</th></tr>
+        </thead>
+        <tbody id="prevAdditionalBody"></tbody>
+        <tfoot><tr class="total-row"><td colspan="4">Total Additional Fee</td><td class="num" id="prevAdditionalTotal">Rp0</td></tr></tfoot>
+      </table>
+      <div class="grand-total-row"><span>Grand Total</span><span id="prevGrandTotal">Rp0</span></div>
+    `;
+  }
+}
+
 function renderPreview() {
   el("prevFromName").textContent = el("fromName").value || "—";
   el("prevClientName").textContent = el("clientName").value || "—";
@@ -169,26 +271,60 @@ function renderPreview() {
     : "—";
   el("prevDate").textContent = formatDateEN(el("invoiceDate").value);
 
-  // items — table: No | Date | Subject | Note | Fee Tutor | Additional Fee
-  const body = el("prevItemsBody");
-  body.innerHTML = "";
+  // items — table skeleton depends on Additional Mode
+  renderInvoiceTable();
 
-  let total = 0;
-  items.forEach((item, i) => {
-    total += (Number(item.price) || 0) + (Number(item.additionalFee) || 0);
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${i + 1}</td>
-      <td>${formatSessionDate(item.date)}</td>
-      <td>${escapeHtml(item.desc) || "—"}</td>
-      <td>${escapeHtml(item.note) || "—"}</td>
-      <td class="num">${formatRupiah(item.price)}</td>
-      <td class="num">${formatRupiah(item.additionalFee || 0)}</td>
-    `;
-    body.appendChild(tr);
-  });
+  if (!additionalMode) {
+    const body = el("prevItemsBody");
+    let total = 0;
+    items.forEach((item, i) => {
+      total += (Number(item.price) || 0) + (Number(item.additionalFee) || 0);
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${i + 1}</td>
+        <td>${formatSessionDate(item.date)}</td>
+        <td>${escapeHtml(item.desc) || "—"}</td>
+        <td>${escapeHtml(item.note) || "—"}</td>
+        <td class="num">${formatRupiah(item.price)}</td>
+        <td class="num">${formatRupiah(item.additionalFee || 0)}</td>
+      `;
+      body.appendChild(tr);
+    });
+    el("prevTotal").textContent = formatRupiah(total);
+  } else {
+    const feeBody = el("prevFeeBody");
+    let feeTotal = 0;
+    items.forEach((item, i) => {
+      feeTotal += Number(item.price) || 0;
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${i + 1}</td>
+        <td>${formatSessionDate(item.date)}</td>
+        <td>${escapeHtml(item.desc) || "—"}</td>
+        <td>${escapeHtml(item.note) || "—"}</td>
+        <td class="num">${formatRupiah(item.price)}</td>
+      `;
+      feeBody.appendChild(tr);
+    });
+    el("prevFeeTotal").textContent = formatRupiah(feeTotal);
 
-  el("prevTotal").textContent = formatRupiah(total);
+    const addBody = el("prevAdditionalBody");
+    let addTotal = 0;
+    additionalItems.forEach((item, i) => {
+      addTotal += Number(item.price) || 0;
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${i + 1}</td>
+        <td>${formatSessionDate(item.date)}</td>
+        <td>${escapeHtml(item.type) || "—"}</td>
+        <td>${escapeHtml(item.note) || "—"}</td>
+        <td class="num">${formatRupiah(item.price)}</td>
+      `;
+      addBody.appendChild(tr);
+    });
+    el("prevAdditionalTotal").textContent = formatRupiah(addTotal);
+    el("prevGrandTotal").textContent = formatRupiah(feeTotal + addTotal);
+  }
 
   // payment
   const bank = el("bankName").value;
@@ -561,5 +697,6 @@ loadTitipanState();
 
 // ============ Init ============
 renderItemRows();
+renderAdditionalItemRows();
 renderPreview();
 renderTitipan();
