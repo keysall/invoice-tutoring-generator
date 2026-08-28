@@ -64,15 +64,29 @@
 
     <!-- Each item row now matches the original table design: No / Date / Subject / Note / Fee Tutor / Additional Fee.
          Row markup itself is generated in script.js (renderItemRows) — this div is just the container. -->
-    <div class="field-group">
+       <div class="field-group">
       <div class="group-header-row">
         <h2 class="group-title">3. Session Details</h2>
         <button type="button" class="btn-ghost btn-sm" id="addItemBtn">+ Add row</button>
-    
+      </div>
+      <label class="switch-row">
+        <span>Additional Mode</span>
+        <span class="switch">
+          <input type="checkbox" id="additionalModeToggle">
+          <span class="switch-slider"></span>
+        </span>
+      </label>
       <div id="itemsList" class="items-list"></div>
     </div>
 
-    <div class="field-group">
+    <div class="field-group" id="additionalFeeGroup" hidden>
+      <div class="group-header-row">
+        <h2 class="group-title">3b. Additional Fee</h2>
+        <button type="button" class="btn-ghost btn-sm" id="addAdditionalItemBtn">+ Add row</button>
+      </div>
+      <div id="additionalItemsList" class="items-list"></div>
+    </div>
+    
       <h2 class="group-title">4. Payment Method</h2>
       <label class="field">
         <span>Bank</span>
@@ -131,27 +145,7 @@
              minimum width and scrolls sideways INSIDE this box, instead of squishing every
              column until the text is unreadable. See .table-scroll + its media query in
              style.css. Do not remove this wrapper div. -->
-        <div class="table-scroll">
-          <table class="sheet-table">
-            <thead>
-              <tr>
-                <th>No</th>
-                <th>Date</th>
-                <th>Subject / Session Tutor</th>
-                <th>Note</th>
-                <th class="num">Fee Tutor</th>
-                <th class="num">Additional Fee</th>
-              </tr>
-            </thead>
-            <tbody id="prevItemsBody"></tbody>
-            <tfoot>
-              <tr class="total-row">
-                <td colspan="5">Total Fee</td>
-                <td class="num" id="prevTotal">Rp0</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
+        <div class="table-scroll" id="tableScroll"></div>
 
         <div class="sheet-payment" id="sheetPayment">
           <div class="section-label">Payment Method</div>
