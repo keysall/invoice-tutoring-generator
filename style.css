@@ -1,328 +1,622 @@
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+/* ============ Design tokens ============ */
+:root {
+  --paper: #FAF9F6;
+  --card: #FFFFFF;
+  --ink: #1F2933;
+  --ink-soft: #5B6472;
+  --ink-faint: #9AA1AB;
+  --border: #E4E1D8;
+  --border-strong: #CFC9B8;
+  --accent: #3B4C8C;
+  --accent-soft: #EDEFF7;
+  --danger: #B23A2E;
+  --radius: 10px;
+  --font-display: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
+  --font-body: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
+  --font-sign: "Caveat", cursive;
 }
 
-body {
-    background-color: #121212;
-    color: #e0e0e0;
-    padding: 20px;
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Layout 2 Kolom (Kiri Form, Kanan Preview) */
-.main-layout {
-    display: flex;
-    gap: 30px;
-    max-width: 1400px;
-    margin: 0 auto;
-    align-items: flex-start;
+/* ============ Topbar ============ */
+.topbar {
+  border-bottom: 1px solid var(--border);
+  background: var(--paper);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.topbar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 18px 24px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.brand {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.brand-accent { color: var(--accent); }
+.topbar-sub {
+  font-size: 13px;
+  color: var(--ink-faint);
 }
 
-.form-section {
-    width: 420px;
-    background: #1e1e1e;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    position: sticky;
-    top: 20px;
+/* ============ Layout ============ */
+/* Desktop: form (fixed 420px) + preview (flexible) side by side.
+   Mobile breakpoint switches this to a single stacked column — see
+   the @media block near the bottom of this file. */
+.layout {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
 }
 
-.invoice-box {
-    flex: 1;
-    background-color: #18181b;
-    border: 1px solid #27272a;
-    padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+.panel { min-width: 0; }
+
+/* ============ Form panel ============ */
+.field-group {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.group-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 14px;
+  color: var(--ink);
+}
+.group-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.group-header-row .group-title { margin: 0; }
+
+.field {
+  display: block;
+  margin-bottom: 12px;
+}
+.field:last-child { margin-bottom: 0; }
+.field span {
+  display: block;
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-bottom: 5px;
+}
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
 }
 
-/* Tombol Tema */
-.theme-toggle {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #27272a;
-    color: #fff;
-    border: 1px solid #3f3f46;
-    padding: 10px 14px;
-    border-radius: 50%;
-    cursor: pointer;
-    font-size: 1.2rem;
-    z-index: 1000;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+input[type="text"],
+input[type="date"],
+input[type="month"],
+input[type="number"],
+textarea {
+  width: 100%;
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  padding: 9px 11px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--paper);
+}
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+textarea { resize: vertical; }
+
+input[type="file"] {
+  font-size: 12px;
+  width: 100%;
 }
 
-.form-section h2, .form-section h3 {
-    margin-bottom: 12px;
-    color: #fff;
-    font-size: 1.1rem;
+/* Line items — one row per session.
+   Columns: Date | Subject | Note | Fee Tutor | Additional Fee | remove-button
+   On mobile this switches to a stacked layout, see @media block below. */
+.items-list { display: flex; flex-direction: column; gap: 10px; }
+
+/* Item row now stacks in a 2-column grid using named areas instead of one
+   tight single-line row — the sidebar is always a fixed 420px wide, which
+   isn't enough room for 6 fields side-by-side no matter the screen size. */
+.item-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    "subject subject"
+    "date note"
+    "price fee"
+    "remove remove";
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.item-row input { font-size: 13px; padding: 7px 9px; }
+.item-row .f-subject { grid-area: subject; }
+.item-row .f-date { grid-area: date; }
+.item-row .f-note { grid-area: note; }
+.item-row .f-price { grid-area: price; }
+
+.item-row .f-fee { grid-area: fee; }
+
+.item-remove {
+  grid-area: remove;
+  justify-self: end;
+  background: none;
+  border: none;
+  color: var(--ink-faint);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+}
+.item-remove:hover { color: var(--danger); }
+
+/* Buttons */
+.btn-primary {
+  width: 100%;
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  border-radius: 8px;
+  padding: 13px 18px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 0.15s ease;
+}
+.btn-primary:hover { opacity: 0.85; }
+.btn-primary:active { transform: scale(0.99); }
+
+.btn-ghost {
+  background: none;
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body);
+}
+.btn-ghost:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+.btn-sm { font-size: 12px; padding: 6px 10px; }
+
+.hint-text {
+  font-size: 12px;
+  color: var(--ink-faint);
+  text-align: center;
+  margin: 10px 0 0;
 }
 
-.form-group {
-    margin-bottom: 10px;
+/* ============ Preview panel ============ */
+.preview-sticky { position: sticky; top: 88px; }
+
+.invoice-sheet {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 40px;
+  box-shadow: 0 1px 2px rgba(31,41,51,0.04);
 }
 
-.form-group label {
-    display: block;
-    font-size: 0.85rem;
-    margin-bottom: 4px;
-    color: #b0b0b0;
+.sheet-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 28px;
+}
+.sheet-title {
+  font-family: var(--font-display);
+  font-size: 44px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+.sheet-subtitle {
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+.sheet-meta {
+  text-align: right;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.sheet-meta-date {
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 2px;
 }
 
-.form-group input, .form-group select {
-    width: 100%;
-    padding: 7px 10px;
-    background: #2a2a2a;
-    border: 1px solid #444;
-    color: #fff;
-    border-radius: 4px;
-    font-size: 0.9rem;
+.sheet-parties {
+  font-size: 13px;
+  line-height: 1.8;
+  margin-bottom: 22px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+}
+.label-muted { color: var(--ink-soft); margin-right: 6px; }
+
+/* Mobile-friendly table wrapper: lets the table scroll sideways on narrow
+   screens instead of squishing columns unreadable. See index.html — the
+   <table> is wrapped in <div class="table-scroll">. Harmless on desktop
+   since overflow only kicks in once the table's min-width exceeds it. */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-.item-form-row {
-    background: #252528;
-    padding: 8px;
-    border-radius: 4px;
-    margin-bottom: 8px;
-    border: 1px solid #333;
+.sheet-table {
+  width: 100%;
+  min-width: 560px; /* keeps columns readable; triggers .table-scroll on phones */
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+.sheet-table th {
+  text-align: left;
+  font-weight: 500;
+  color: var(--ink-soft);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  padding: 0 6px 10px;
+  border-bottom: 1.5px solid var(--ink);
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+.sheet-table td {
+  padding: 10px 6px;
+  border-bottom: 1px solid var(--border);
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+/* Number columns (Fee Tutor / Additional Fee): header may wrap to 2 lines,
+   but the actual Rupiah value must never wrap mid-number. */
+.sheet-table th.num { text-align: right; }
+.sheet-table td.num { text-align: right; white-space: nowrap; }
+
+/* Table structure: No / Date / Subject / Note / Fee Tutor / Additional Fee */
+.sheet-table th:nth-child(1), .sheet-table td:nth-child(1) { width: 6%; }
+.sheet-table th:nth-child(2), .sheet-table td:nth-child(2) { width: 15%; }
+.sheet-table th:nth-child(3), .sheet-table td:nth-child(3) { width: 28%; }
+.sheet-table th:nth-child(4), .sheet-table td:nth-child(4) { width: 10%; }
+.sheet-table th:nth-child(5), .sheet-table td:nth-child(5) { width: 20%; }
+.sheet-table th:nth-child(6), .sheet-table td:nth-child(6) { width: 21%; }
+
+.sheet-table tfoot td {
+  border-bottom: none;
+  border-top: 1.5px solid var(--ink);
+  font-weight: 600;
+  padding-top: 12px;
 }
 
-.item-form-row small {
-    color: #888;
-    display: block;
-    margin-bottom: 3px;
+.sheet-payment {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
 }
-
-.item-form-row input {
-    margin-bottom: 5px;
+.section-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-faint);
+  margin-bottom: 12px;
 }
-
-.btn-add {
-    background: #3f3f46;
-    color: #fff;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    margin-bottom: 15px;
+.payment-options {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  flex-wrap: wrap;
 }
-
-.btn-del {
-    background: #7f1d1d;
-    color: #fca5a5;
-    border: none;
-    padding: 3px 8px;
-    border-radius: 3px;
-    cursor: pointer;
-    font-size: 0.75rem;
+.payment-empty {
+  font-size: 12px;
+  color: var(--ink-faint);
+  font-style: italic;
 }
-
-.btn-print {
-    width: 100%;
-    background: #ffffff;
-    color: #121212;
-    padding: 10px;
-    border: none;
-    border-radius: 4px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 10px;
+.payment-block {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
-
-/* Header & Teks kustom */
-.invoice-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 30px;
-    border-bottom: 1px solid #27272a;
-    padding-bottom: 20px;
+.payment-block + .payment-block {
+  padding-left: 24px;
+  border-left: 1px solid var(--border);
 }
-
-.inv-title {
-    font-size: 2rem;
-    color: #ffffff;
-    letter-spacing: 1px;
+.qris-thumb {
+  width: 64px;
+  height: 64px;
+  border-radius: 6px;
+  border: 1px solid var(--border-strong);
+  object-fit: cover;
 }
+.payment-text { font-size: 13px; line-height: 1.6; }
+.payment-text .payment-title { color: var(--ink-soft); font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 2px; }
 
-.subtitle {
-    color: #a1a1aa;
-    font-size: 0.95rem;
+.sheet-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
 }
-
-.invoice-meta {
-    text-align: right;
-    color: #a1a1aa;
+.footer-note {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--ink);
+  max-width: 60%;
 }
-
-.fs-large {
-    font-size: 1.15rem; /* setara sekitar 16+ bold */
+.footer-contact {
+  color: var(--ink-soft);
+  margin-top: 6px;
 }
-
-.fw-bold {
-    font-weight: bold;
-    color: #fff;
+.footer-sign {
+  text-align: right;
+  flex-shrink: 0;
 }
-
-/* Table */
-.invoice-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 30px;
+.sign-label {
+  font-size: 11px;
+  color: var(--ink-faint);
+  margin-bottom: 2px;
 }
-
-.invoice-table th, .invoice-table td {
-    padding: 12px 8px;
-    border-bottom: 1px solid #27272a;
-    font-size: 0.95rem;
-}
-
-.invoice-table th {
-    color: #a1a1aa;
-    font-weight: 500;
-    text-align: left;
-}
-
-.text-right {
-    text-align: right;
-}
-
-.invoice-table tfoot td {
-    font-weight: bold;
-    border-top: 1px solid #27272a;
-    border-bottom: none;
-}
-
-/* Payment & Footer */
-.payment-section {
-    margin-bottom: 40px;
-}
-
-.section-title {
-    font-size: 0.8rem;
-    color: #71717a;
-    letter-spacing: 1px;
-    margin-bottom: 12px;
-}
-
-.payment-methods {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-}
-
-.qris-box {
-    background: #27272a;
-    border: 1px solid #3f3f46;
-    padding: 10px 12px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-}
-
-.bank-title {
-    font-weight: 500;
-    margin-bottom: 4px;
-}
-
-.bank-box p {
-    color: #d4d4d8;
-    font-size: 0.95rem;
-    line-height: 1.4;
-}
-
-.invoice-footer {
-    border-top: 1px solid #27272a;
-    padding-top: 20px;
-}
-
-.invoice-footer p {
-    color: #a1a1aa;
-    font-size: 0.9rem;
-}
-
-.contact-info {
-    margin-top: 5px;
-}
-
-.signature {
-    text-align: right;
-    margin-top: -30px;
-}
-
 .sign-name {
-    font-family: 'Georgia', serif;
-    font-size: 1.3rem; /* Sekitar 20+ bold */
-    font-weight: bold;
-    font-style: italic;
-    color: #ffffff;
-    margin-top: 5px;
+  font-family: var(--font-sign);
+  font-size: 32px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1;
 }
 
-/* Warna Pastel Tabel */
-.invoice-box.pastel-merah .invoice-table th { background-color: rgba(254, 202, 202, 0.15); color: #f87171; border-radius: 4px; }
-.invoice-box.pastel-hijau .invoice-table th { background-color: rgba(187, 247, 208, 0.15); color: #4ade80; border-radius: 4px; }
-.invoice-box.pastel-biru .invoice-table th { background-color: rgba(191, 219, 254, 0.15); color: #60a5fa; border-radius: 4px; }
-.invoice-box.pastel-kuning .invoice-table th { background-color: rgba(254, 240, 138, 0.15); color: #facc15; border-radius: 4px; }
-.invoice-box.pastel-ungu .invoice-table th { background-color: rgba(233, 213, 255, 0.15); color: #c084fc; border-radius: 4px; }
+/* ============================================================
+   MOBILE-FRIENDLY OVERRIDES
+   Everything below this line targets small screens only (phones).
+   If you add new sections/fields later, add their mobile overrides
+   HERE (not scattered elsewhere) so the responsive layout stays
+   easy to track in one place.
+   ============================================================ */
+@media (max-width: 640px) {
+  /* Shrink page padding so content isn't cramped against screen edges */
+  .layout { padding: 20px 14px 60px; gap: 20px; }
+  .topbar-inner { padding: 14px 16px; flex-wrap: wrap; }
 
-/* Light Mode */
-body.light-mode { background-color: #f4f4f5; color: #18181b; }
-body.light-mode .form-section { background: #ffffff; border: 1px solid #e4e4e7; }
-body.light-mode .form-section h2, body.light-mode .form-section h3, body.light-mode .form-group label { color: #27272a; }
-body.light-mode .form-group input, body.light-mode .form-group select { background: #f9f9fb; border: 1px solid #d4d4d8; color: #18181b; }
-body.light-mode .item-form-row { background: #f4f4f5; border-color: #e4e4e7; }
-.light-mode .btn-add { background: #e4e4e7; color: #18181b; }
-body.light-mode .invoice-box { background-color: #ffffff; border: 1px solid #e4e4e7; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
-body.light-mode .inv-title, body.light-mode .sign-name, body.light-mode .invoice-table tfoot td, body.light-mode .fw-bold { color: #18181b; }
-body.light-mode .invoice-header, body.light-mode .invoice-table th, body.light-mode .invoice-table td, body.light-mode .invoice-footer { border-color: #e4e4e7; }
-body.light-mode .qris-box { background: #f4f4f5; border-color: #d4d4d8; }
-body.light-mode .theme-toggle { background: #ffffff; color: #18181b; border-color: #d4d4d8; }
 
-/* ==== PRINT SETTINGS (SIMPAN PDF) ==== */
-@page {
-    size: A4 portrait;
-    margin: 0; /* Menghapus margin putih bawaan browser dan teks URL/Link */
+
+  /* Preview sheet: less padding, smaller title so it doesn't dominate
+     a narrow screen. Table itself is handled by .table-scroll above —
+     it keeps min-width: 560px and scrolls sideways instead of squishing. */
+  .invoice-sheet { padding: 20px; }
+  .sheet-title { font-size: 26px; }
+  .sheet-head { flex-direction: column; gap: 10px; }
+  .sheet-meta { text-align: left; }
+
+  .sheet-footer { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .footer-note { max-width: 100%; }
+  .footer-sign { text-align: left; }
+
+  /* Preview panel isn't sticky on mobile — it just flows below the form,
+     since there's no side-by-side space for it to stick to. */
+  .preview-sticky { position: static; top: auto; }
+}
+/* ============================================================
+   TABS
+   ============================================================ */
+.tab-bar {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+}
+.tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 14px 6px;
+  margin-right: 24px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  cursor: pointer;
+}
+.tab-btn:hover { color: var(--ink-soft); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ============================================================
+   TAB 2 — STUDENT DEPOSIT CALCULATOR
+   ============================================================ */
+.titipan-wrap {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+.titipan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.titipan-title {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+.titipan-subtitle {
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin: 0;
+  max-width: 480px;
 }
 
-@media print {
-    html, body {
-        width: 100% !important;
-        height: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        background-color: #18181b !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-    }
-    
-    .form-section, .theme-toggle {
-        display: none !important;
-    }
-    
-    .main-layout {
-        display: block !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-    
-    .invoice-box {
-        width: 100% !important;
-        max-width: 100% !important;
-        min-height: 100vh !important; /* Membuat background full ke bawah */
-        border: none !important;
-        border-radius: 0 !important; /* Menghilangkan sudut melengkung */
-        box-shadow: none !important;
-        margin: 0 !important;
-        padding: 1.5cm !important; /* Jarak proporsional teks dari tepi kertas */
-        background-color: #18181b !important;
-    }
+.client-blocks { display: flex; flex-direction: column; gap: 20px; }
+
+.client-block {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
 }
+.client-block-head {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.client-name-input {
+  flex: 1;
+  border: 1px solid var(--border-strong);
+  border-radius: 7px;
+  padding: 9px 11px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--paper);
+  color: var(--ink);
+}
+.client-name-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+.titipan-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+.titipan-table th {
+  text-align: left;
+  font-weight: 500;
+  color: var(--ink-soft);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  padding: 0 6px 8px;
+  border-bottom: 1.5px solid var(--ink);
+}
+.titipan-table th.num { text-align: right; }
+.titipan-table td {
+  padding: 6px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.titipan-table td.num { text-align: right; }
+.titipan-table input[type="text"],
+.titipan-table input[type="date"],
+.titipan-table input[type="number"] {
+  font-size: 13px;
+  padding: 6px 8px;
+}
+.titipan-table tfoot td {
+  border-bottom: none;
+  border-top: 1.5px solid var(--ink);
+  font-weight: 600;
+  padding-top: 10px;
+}
+
+/* Mobile: table header disappears, each row becomes a stacked mini-card
+   instead of squishing every column into one tight line. Column order is
+   controlled by `order:` below — Price is placed before Type here, as
+   requested, without touching the actual HTML/JS markup order. */
+@media (max-width: 640px) {
+  .titipan-wrap { padding: 20px 14px 60px; }
+  .titipan-header { flex-direction: column; }
+  .titipan-table thead { display: none; }
+  .titipan-table, .titipan-table tbody, .titipan-table tr, .titipan-table td {
+    display: block;
+    width: 100%;
+  }
+  .titipan-table tr {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 8px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .titipan-table td { border-bottom: none; padding: 0; }
+  .titipan-table td:nth-child(1) { flex: 0 0 20px; order: 1; }
+  .titipan-table td:nth-child(2) { flex: 1 1 45%; order: 2; }
+  .titipan-table td:nth-child(4) { flex: 1 1 40%; order: 3; }
+  .titipan-table td:nth-child(3) { flex: 1 1 100%; order: 4; }
+  .titipan-table td:nth-child(5) { flex: 1 1 100%; order: 5; }
+  .titipan-table td:nth-child(6) { flex: 0 0 auto; order: 6; margin-left: auto; }
+  .titipan-table input { width: 100%; }
+  .titipan-table td:nth-child(2)::before { content: "Date"; }
+  .titipan-table td:nth-child(3)::before { content: "Type"; }
+  .titipan-table td:nth-child(4)::before { content: "Price"; }
+  .titipan-table td:nth-child(5)::before { content: "Note"; }
+  .titipan-table td::before {
+    display: block;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--ink-faint);
+    margin-bottom: 3px;
+  }
+  .titipan-table tfoot tr { flex-wrap: nowrap; justify-content: space-between; border-bottom: none; }
+  .titipan-table tfoot td::before { content: none !important; }
+}
+
+.site-footer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 24px 40px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+.site-footer p {
+  margin: 4px 0;
+}
+.site-footer a { color: var(--accent); text-decoration: none; }
+.site-footer a:hover { text-decoration: underline; }
