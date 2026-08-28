@@ -1,277 +1,208 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Invoice Otomatis</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoice Generator — Your Name please <3</title>
+<meta name="description" content="simple invoice generator for tutoring sessions ˖ ݁♬⋆.˚𝄞">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Inter:wght@400;500;600&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <button class="theme-toggle" onclick="toggleTheme()" title="Ganti Tema">🌙</button>
+<header class="topbar">
+  <div class="topbar-inner">
+    <span class="brand">Invoice<span class="brand-accent">.</span>Key</span>
+    <span class="topbar-sub">created for a tutoring session 𖹭.ᐟ</span>
+  </div>
+</header>
 
-    <div class="main-layout">
-        <!-- FORM INPUT DI SEBELAH KIRI -->
-        <div class="form-section no-print">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <h2 style="margin: 0;">Form Input Invoice</h2>
-                <button onclick="resetData()" title="Reset ke Default" style="background: #7f1d1d; color: #fca5a5; border: none; padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer;">Reset</button>
-            </div>
-            
-            <div class="form-group">
-                <label>Bulan / Tanggal Invoice:</label>
-                <input type="text" id="inputTanggal" value="Agustus 2026" oninput="saveAndRender()">
-            </div>
-            <div class="form-group">
-                <label>Nomor Invoice:</label>
-                <input type="text" id="inputNoInvoice" value="TTR-097/M13/08/2026" oninput="saveAndRender()">
-            </div>
-            <div class="form-group">
-                <label>Nama Pemberi / Pemilik:</label>
-                <input type="text" id="inputNama" value="Xu Yiyang" oninput="saveAndRender()">
-            </div>
-            <div class="form-group">
-                <label>Info Kontak & Email (Footer):</label>
-                <input type="text" id="inputKontak" value="WA: 08xx • xuyiyang@students.unnes.ac.id" oninput="saveAndRender()">
-            </div>
-            <div class="form-group">
-                <label>Info Bank & Nomor Rekening:</label>
-                <input type="text" id="inputBank" value="BCA 1234567890" oninput="saveAndRender()">
-            </div>
-            <div class="form-group">
-                <label>Pilihan Warna Tabel (Pastel):</label>
-                <select id="inputWarnaTabel" onchange="ubahWarnaTabel(); saveAndRender();">
-                    <option value="default">Default (Gelap/Netral)</option>
-                    <option value="pastel-merah">Merah Pastel</option>
-                    <option value="pastel-hijau">Hijau Pastel</option>
-                    <option value="pastel-biru">Biru Pastel</option>
-                    <option value="pastel-kuning">Kuning Pastel</option>
-                    <option value="pastel-ungu">Ungu Pastel</option>
-                </select>
-            </div>
+<!-- ============ TABS ============ -->
+<nav class="tab-bar">
+  <button type="button" class="tab-btn active" data-tab="tab-invoice">Invoice</button>
+  <button type="button" class="tab-btn" data-tab="tab-titipan">Kalkulator titipan</button>
+</nav>
 
-            <hr style="border: 0; border-top: 1px solid #444; margin: 15px 0;">
-            
-            <h3>Daftar Baris Item</h3>
-            <div id="itemFormContainer"></div>
-            <button class="btn-add" onclick="tambahBarisItem()">+ Tambah Baris</button>
+<div id="tab-invoice" class="tab-panel active">
+<main class="layout">
 
-            <button class="btn-print" onclick="window.print()">Cetak / Simpan PDF</button>
-        </div>
+  <!-- ============ FORM PANEL ============ -->
+  <section class="panel form-panel" aria-label="Form input invoice">
 
-        <!-- PREVIEW INVOICE DI SEBELAH KANAN -->
-        <div class="invoice-box" id="invoiceContent">
-            <div class="invoice-header">
-                <div>
-                    <h1 class="inv-title">INVOICE</h1>
-                    <p class="subtitle" id="dispSubt">Tutoring session recap</p>
-                </div>
-                <div class="invoice-meta">
-                    <p id="dispTanggal" class="fw-bold fs-large">Agustus 2026</p>
-                    <p>Invoice No: <span id="dispNoInvoice">TTR-097/M13/08/2026</span></p>
-                </div>
-            </div>
-
-            <table class="invoice-table">
-                <thead>
-                    <tr>
-                        <th>No</th>
-                        <th>Notes</th>
-                        <th>Subjek</th>
-                        <th>Additional Fee</th>
-                        <th class="text-right">Fee Tutor</th>
-                    </tr>
-                </thead>
-                <tbody id="invoiceTableBody">
-                    <!-- Dinamis dari JS -->
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="4" class="text-right">Total</td>
-                        <td class="text-right" id="dispTotal">Rp0</td>
-                    </tr>
-                </tfoot>
-            </table>
-
-            <div class="payment-section">
-                <p class="section-title">METODE PEMBAYARAN</p>
-                <div class="payment-methods">
-                    <div class="qris-box" onclick="document.getElementById('inputQrisFile').click()" title="Klik untuk ganti gambar QRIS">
-                        <img id="dispQrisImg" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='1.5'><rect width='18' height='18' x='3' y='3' rx='2'/><path d='M7 7h3v3H7zM14 7h3v3h-3zM7 14h3v3H7z'/></svg>" alt="QRIS" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
-                        <div>
-                            <span style="font-size: 0.8rem; display: block; font-weight: bold;">QRIS</span>
-                            <span style="font-size: 0.65rem; color: #a1a1aa;">Klik upload</span>
-                        </div>
-                        <input type="file" id="inputQrisFile" accept="image/*" style="display: none;" onchange="loadQrisImage(event)">
-                    </div>
-                    <div class="bank-box">
-                        <p class="bank-title">Transfer Bank</p>
-                        <p id="dispBank">BCA 1234567890</p>
-                        <p>a.n. <span id="dispNamaBank">Xu Yiyang</span></p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="invoice-footer">
-                <p>Terima kasih! Jika ada pertanyaan, silakan hubungi WA atau email di bawah.</p>
-                <p class="contact-info" id="dispKontak">WA: 08xx • xuyiyang@students.unnes.ac.id</p>
-                <div class="signature">
-                    <p>Best regards,</p>
-                    <p class="sign-name" id="dispNamaSign">Xu Yiyang</p>
-                </div>
-            </div>
-        </div>
+    <div class="field-group">
+      <h2 class="group-title">1. From</h2>
+      <label class="field">
+        <span>Your name</span>
+        <input type="text" id="fromName" placeholder="Xu Yiyang" value="Xu Yiyang">
+      </label>
+      <label class="field">
+        <span>Contact (email / WhatsApp)</span>
+        <input type="text" id="fromContact" placeholder="@gmail.com || WA 08xx">
+      </label>
     </div>
 
-    <script>
-        let defaultData = {
-            tanggal: "Agustus 2026",
-            noInvoice: "TTR-097/M13/08/2026",
-            nama: "Xu Yiyang",
-            kontak: "WA: 08xx • xuyiyang@students.unnes.ac.id",
-            bank: "BCA 1234567890",
-            warnaTabel: "default",
-            qrisImg: "",
-            items: [
-                { notes: 'Sesi 1', subjek: 'Math: Functions', addFee: 0, fee: 100000 }
-            ]
-        };
+    <div class="field-group">
+      <h2 class="group-title">2. To</h2>
+      <label class="field">
+        <span>Client name</span>
+        <input type="text" id="clientName" placeholder="Student Name / Client">
+      </label>
+      <div class="field-row">
+        <label class="field">
+          <span>Invoice number</span>
+          <input type="text" id="invoiceNumber" placeholder="Client-012/2026">
+        </label>
+        <!-- Invoice date = monthly billing period, NOT a single day. Input type="month" on purpose. -->
+        <label class="field">
+          <span>Month</span>
+          <input type="month" id="invoiceDate">
+        </label>
+      </div>
+    </div>
 
-        function loadData() {
-            let saved = localStorage.getItem('invoice_progress_data');
-            if (saved) {
-                try {
-                    return JSON.parse(saved);
-                } catch(e) {
-                    return defaultData;
-                }
-            }
-            return defaultData;
-        }
+    <!-- Each item row now matches the original table design: No / Date / Subject / Note / Fee Tutor / Additional Fee.
+         Row markup itself is generated in script.js (renderItemRows) — this div is just the container. -->
+    <div class="field-group">
+      <div class="group-header-row">
+        <h2 class="group-title">3. Session Details</h2>
+        <button type="button" class="btn-ghost btn-sm" id="addItemBtn">+ Add row</button>
+    
+      <div id="itemsList" class="items-list"></div>
+    </div>
 
-        let appData = loadData();
+    <div class="field-group">
+      <h2 class="group-title">4. Payment Method</h2>
+      <label class="field">
+        <span>Bank</span>
+        <input type="text" id="bankName" placeholder="cth: BCA">
+      </label>
+      <label class="field">
+        <span>Account number</span>
+        <input type="text" id="bankAccount" placeholder="1234567890">
+      </label>
+      <label class="field">
+        <span>Account holder</span>
+        <input type="text" id="bankHolder" placeholder="Your name <3">
+      </label>
+      <label class="field">
+        <span>QRIS (optional)</span>
+        <input type="file" id="qrisUpload" accept="image/*">
+      </label>
+      <button type="button" class="btn-ghost btn-sm" id="removeQrisBtn" hidden>✕ Remove QRIS</button>
+    </div>
 
-        // Masukkan data tersimpan ke form saat pertama buka
-        document.getElementById('inputTanggal').value = appData.tanggal;
-        document.getElementById('inputNoInvoice').value = appData.noInvoice;
-        document.getElementById('inputNama').value = appData.nama;
-        document.getElementById('inputKontak').value = appData.kontak;
-        document.getElementById('inputBank').value = appData.bank;
-        document.getElementById('inputWarnaTabel').value = appData.warnaTabel;
-        if(appData.qrisImg) {
-            document.getElementById('dispQrisImg').src = appData.qrisImg;
-        }
-        ubahWarnaTabel();
+    <div class="field-group">
+      <h2 class="group-title">5. Closing Note</h2>
+      <label class="field">
+        <span>Short message ^_^</span>
+        <textarea id="closingNote" rows="2">Thank you! If there are any issues, please contact me through.</textarea>
+      </label>
+    </div>
 
-        function saveAndRender() {
-            // Ambil nilai terbaru dari form
-            appData.tanggal = document.getElementById('inputTanggal').value;
-            appData.noInvoice = document.getElementById('inputNoInvoice').value;
-            appData.nama = document.getElementById('inputNama').value;
-            appData.kontak = document.getElementById('inputKontak').value;
-            appData.bank = document.getElementById('inputBank').value;
-            appData.warnaTabel = document.getElementById('inputWarnaTabel').value;
+    <button type="button" class="btn-primary" id="downloadBtn">Download as PDF</button>
+    <p class="hint-text">All data is processed &amp; auto-saved in your own browser (˶ᵔ ᵕ ᵔ˶)</p>
+    <button type="button" class="btn-ghost btn-sm" id="clearCacheBtn" style="margin:8px auto 0; display:flex;">🗑 Clear saved data</button>
+  </section>
 
-            // Simpan ke localStorage
-            localStorage.setItem('invoice_progress_data', JSON.stringify(appData));
+  <!-- ============ PREVIEW PANEL ============ -->
+  <section class="panel preview-panel" aria-label="Pratinjau invoice">
+    <div class="preview-sticky">
+      <div class="invoice-sheet" id="invoiceSheet">
 
-            renderApp();
-        }
+        <div class="sheet-head">
+          <div>
+            <div class="sheet-title">Invoice</div>
+            <div class="sheet-subtitle">Tutoring session recap</div>
+          </div>
+          <div class="sheet-meta">
+            <div class="sheet-meta-date" id="prevDate">—</div>
+            <div id="prevInvoiceNumber">—</div>
+          </div>
+        </div>
 
-        function renderApp() {
-            let formHtml = '';
-            appData.items.forEach((item, index) => {
-                formHtml += `
-                    <div class="item-form-row">
-                        <small>Baris ${index + 1}</small>
-                        <input type="text" placeholder="Notes" value="${item.notes}" oninput="updateItem(${index}, 'notes', this.value)">
-                        <input type="text" placeholder="Subjek" value="${item.subjek}" oninput="updateItem(${index}, 'subjek', this.value)">
-                        <input type="number" placeholder="Add Fee" value="${item.addFee}" oninput="updateItem(${index}, 'addFee', this.value)">
-                        <input type="number" placeholder="Fee Tutor" value="${item.fee}" oninput="updateItem(${index}, 'fee', this.value)">
-                        ${appData.items.length > 1 ? `<button class="btn-del" onclick="hapusBaris(${index})">Hapus</button>` : ''}
-                    </div>
-                `;
-            });
-            document.getElementById('itemFormContainer').innerHTML = formHtml;
+        <div class="sheet-parties">
+          <div><span class="label-muted">Invoice For</span> <span id="prevClientName">—</span></div>
+          <div><span class="label-muted">From</span> <span id="prevFromName">—</span></div>
+        </div>
 
-            let tableHtml = '';
-            let grandTotal = 0;
-            appData.items.forEach((item, index) => {
-                let subTotal = Number(item.addFee) + Number(item.fee);
-                grandTotal += subTotal;
-                tableHtml += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${item.notes}</td>
-                        <td>${item.subjek}</td>
-                        <td>${formatRupiah(item.addFee)}</td>
-                        <td class="text-right">${formatRupiah(item.fee)}</td>
-                    </tr>
-                `;
-            });
-            document.getElementById('invoiceTableBody').innerHTML = tableHtml;
-            document.getElementById('dispTotal').innerText = formatRupiah(grandTotal);
+        <!-- .table-scroll = mobile-friendly wrapper. On narrow screens the table keeps a
+             minimum width and scrolls sideways INSIDE this box, instead of squishing every
+             column until the text is unreadable. See .table-scroll + its media query in
+             style.css. Do not remove this wrapper div. -->
+        <div class="table-scroll">
+          <table class="sheet-table">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Date</th>
+                <th>Subject / Session Tutor</th>
+                <th>Note</th>
+                <th class="num">Fee Tutor</th>
+                <th class="num">Additional Fee</th>
+              </tr>
+            </thead>
+            <tbody id="prevItemsBody"></tbody>
+            <tfoot>
+              <tr class="total-row">
+                <td colspan="5">Total Fee</td>
+                <td class="num" id="prevTotal">Rp0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
 
-            document.getElementById('dispTanggal').innerText = appData.tanggal;
-            document.getElementById('dispNoInvoice').innerText = appData.noInvoice;
-            document.getElementById('dispNamaBank').innerText = appData.nama;
-            document.getElementById('dispNamaSign').innerText = appData.nama;
-            document.getElementById('dispBank').innerText = appData.bank;
-            document.getElementById('dispKontak').innerText = appData.kontak;
-        }
+        <div class="sheet-payment" id="sheetPayment">
+          <div class="section-label">Payment Method</div>
+          <div class="payment-options" id="paymentOptions">
+            <div class="payment-empty" id="paymentEmpty">No payment method added yet T__T.</div>
+          </div>
+        </div>
 
-        function formatRupiah(angka) {
-            return 'Rp' + Number(angka).toLocaleString('id-ID');
-        }
+        <div class="sheet-footer">
+          <div class="footer-note">
+            <div id="prevClosingNote">—</div>
+            <div class="footer-contact" id="prevContact"></div>
+          </div>
+          <div class="footer-sign">
+            <div class="sign-label">Best regards,</div>
+            <div class="sign-name" id="prevSignature">—</div>
+          </div>
+        </div>
 
-        function tambahBarisItem() {
-            appData.items.push({ notes: '-', subjek: 'Materi Baru', addFee: 0, fee: 50000 });
-            saveAndRender();
-        }
+      </div>
+    </div>
+  </section>
 
-        function hapusBaris(index) {
-            appData.items.splice(index, 1);
-            saveAndRender();
-        }
+</main>
+</div>
 
-        function updateItem(index, field, value) {
-            appData.items[index][field] = value;
-            saveAndRender();
-        }
+<!-- ============ TAB 2: STUDENT DEPOSIT CALCULATOR ============ -->
+<div id="tab-titipan" class="tab-panel">
+  <div class="titipan-wrap">
+    <div class="titipan-header">
+      <div>
+        <h1 class="titipan-title">Kalkulator titipan</h1>
+        <p class="titipan-subtitle">Track items purchased on behalf of each student, with an automatic running total.</p>
+      </div>
+      <button type="button" class="btn-primary" id="addClientBtn" style="width:auto;">+ Add Student</button>
+    </div>
+    <div id="clientBlocks" class="client-blocks"></div>
+  </div>
+</div>
+</div>
 
-        function loadQrisImage(event) {
-            const reader = new FileReader();
-            reader.onload = function(){
-                appData.qrisImg = reader.result;
-                document.getElementById('dispQrisImg').src = reader.result;
-                saveAndRender();
-            };
-            reader.readAsDataURL(event.target.files[0]);
-        }
+  
+<footer class="site-footer">
+  <p>klo ada masalah chat tele ya <a href="https://t.me/censhie" target="_blank" rel="noopener">@censhie</a> jgn spam!</p>
+  <p>𝄞⋆ ݁♪ . this site is currently under development by keysa ✮⋆˙</p>
+</footer>
 
-        function ubahWarnaTabel() {
-            const pilihan = document.getElementById('inputWarnaTabel').value;
-            const box = document.getElementById('invoiceContent');
-            box.classList.remove('pastel-merah', 'pastel-hijau', 'pastel-biru', 'pastel-kuning', 'pastel-ungu');
-            if(pilihan !== 'default') {
-                box.classList.add(pilihan);
-            }
-        }
-
-        function toggleTheme() {
-            document.body.classList.toggle('light-mode');
-            const btn = document.querySelector('.theme-toggle');
-            btn.innerText = document.body.classList.contains('light-mode') ? '☀️' : '🌙';
-        }
-
-        function resetData() {
-            if(confirm('Reset semua data kembali ke awal?')) {
-                localStorage.removeItem('invoice_progress_data');
-                location.reload();
-            }
-        }
-
-        renderApp();
-    </script>
+  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
