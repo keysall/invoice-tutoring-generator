@@ -147,27 +147,7 @@
 
         <!-- .table-scroll = mobile-friendly wrapper: table scrolls sideways inside
              this box on narrow screens instead of squishing columns unreadable. -->
-        <div class="table-scroll">
-          <table class="sheet-table">
-            <thead>
-              <tr>
-                <th>No</th>
-                <th>Date</th>
-                <th>Subject / Session Tutor</th>
-                <th>Note</th>
-                <th class="num">Fee Tutor</th>
-                <th class="num">Additional Fee</th>
-              </tr>
-            </thead>
-            <tbody id="prevItemsBody"></tbody>
-            <tfoot>
-              <tr class="total-row">
-                <td colspan="5">Total Fee</td>
-                <td class="num" id="prevTotal">Rp0</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
+        <div class="table-scroll" id="mainTableWrap"></div>
 
         <!-- Additional Mode table: hidden unless the toggle in the form is on.
              Only touched by script.js when additionalMode === true. -->
