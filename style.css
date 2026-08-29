@@ -55,6 +55,37 @@ html, body {
   color: var(--ink-faint);
 }
 
+/* ============================================================
+   TABS
+   ============================================================ */
+.tab-bar {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+}
+.tab-btn {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 14px 6px;
+  margin-right: 24px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  cursor: pointer;
+}
+.tab-btn:hover { color: var(--ink-soft); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
 /* ============ Layout ============ */
 /* Desktop: form (fixed 420px) + preview (flexible) side by side.
    Mobile breakpoint switches this to a single stacked column — see
@@ -140,14 +171,41 @@ input[type="file"] {
   width: 100%;
 }
 
-/* Line items — one row per session.
-   Columns: Date | Subject | Note | Fee Tutor | Additional Fee | remove-button
-   On mobile this switches to a stacked layout, see @media block below. */
-.items-list { display: flex; flex-direction: column; gap: 10px; }
+/* ============ Toggle switch (used by Additional Mode) ============ */
+.switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.switch { position: relative; display: inline-block; width: 38px; height: 22px; flex-shrink: 0; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.switch-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--border-strong);
+  border-radius: 999px;
+  transition: background 0.15s ease;
+}
+.switch-slider::before {
+  content: "";
+  position: absolute;
+  width: 16px; height: 16px;
+  left: 3px; top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.15s ease;
+}
+.switch input:checked + .switch-slider { background: var(--accent); }
+.switch input:checked + .switch-slider::before { transform: translateX(16px); }
 
-/* Item row now stacks in a 2-column grid using named areas instead of one
-   tight single-line row — the sidebar is always a fixed 420px wide, which
-   isn't enough room for 6 fields side-by-side no matter the screen size. */
+/* ============ Line items — Session Details (main table, untouched by Additional Mode) ============
+   Row layout uses named grid areas (not one tight single-line row) because the
+   sidebar is a fixed 420px wide — not enough room for 5-6 fields side by side
+   at any screen size. Subject gets full width, other fields pair up. */
+.items-list { display: flex; flex-direction: column; gap: 10px; }
 .item-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -166,7 +224,6 @@ input[type="file"] {
 .item-row .f-date { grid-area: date; }
 .item-row .f-note { grid-area: note; }
 .item-row .f-price { grid-area: price; }
-
 .item-row .f-fee { grid-area: fee; }
 
 .item-remove {
@@ -185,6 +242,19 @@ input[type="file"] {
   line-height: 1;
 }
 .item-remove:hover { color: var(--danger); }
+
+/* Additional Fee (titipan) form rows — same row component, different field set */
+.item-row-titipan {
+  grid-template-areas:
+    "type type"
+    "date qty"
+    "price price"
+    "remove remove";
+}
+.item-row-titipan .f-type { grid-area: type; }
+.item-row-titipan .f-date { grid-area: date; }
+.item-row-titipan .f-qty { grid-area: qty; }
+.item-row-titipan .f-price { grid-area: price; }
 
 /* Buttons */
 .btn-primary {
@@ -277,10 +347,9 @@ input[type="file"] {
 }
 .label-muted { color: var(--ink-soft); margin-right: 6px; }
 
-/* Mobile-friendly table wrapper: lets the table scroll sideways on narrow
-   screens instead of squishing columns unreadable. See index.html — the
-   <table> is wrapped in <div class="table-scroll">. Harmless on desktop
-   since overflow only kicks in once the table's min-width exceeds it. */
+/* Mobile-friendly table wrapper: table scrolls sideways on narrow screens
+   instead of squishing columns unreadable. Harmless on desktop since
+   overflow only kicks in once the table's min-width exceeds it. */
 .table-scroll {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -312,12 +381,11 @@ input[type="file"] {
   white-space: normal;
   overflow-wrap: break-word;
 }
-/* Number columns (Fee Tutor / Additional Fee): header may wrap to 2 lines,
-   but the actual Rupiah value must never wrap mid-number. */
+/* Number columns: header may wrap to 2 lines, but the value never wraps mid-number. */
 .sheet-table th.num { text-align: right; }
 .sheet-table td.num { text-align: right; white-space: nowrap; }
 
-/* Table structure: No / Date / Subject / Note / Fee Tutor / Additional Fee */
+/* Main table structure: No / Date / Subject / Note / Fee Tutor / Additional Fee */
 .sheet-table th:nth-child(1), .sheet-table td:nth-child(1) { width: 6%; }
 .sheet-table th:nth-child(2), .sheet-table td:nth-child(2) { width: 15%; }
 .sheet-table th:nth-child(3), .sheet-table td:nth-child(3) { width: 28%; }
@@ -330,6 +398,24 @@ input[type="file"] {
   border-top: 1.5px solid var(--ink);
   font-weight: 600;
   padding-top: 12px;
+}
+
+/* Additional Mode table: No / Date / Jenis Titipan / Qty / Harga — 5 columns,
+   overrides the 6-column widths above. Must come after .sheet-table rules. */
+.sheet-table-additional th:nth-child(1), .sheet-table-additional td:nth-child(1) { width: 8%; }
+.sheet-table-additional th:nth-child(2), .sheet-table-additional td:nth-child(2) { width: 20%; }
+.sheet-table-additional th:nth-child(3), .sheet-table-additional td:nth-child(3) { width: 38%; }
+.sheet-table-additional th:nth-child(4), .sheet-table-additional td:nth-child(4) { width: 16%; }
+.sheet-table-additional th:nth-child(5), .sheet-table-additional td:nth-child(5) { width: 18%; }
+
+.grand-total-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1.5px solid var(--ink);
+  font-weight: 600;
+  font-size: 14px;
 }
 
 .sheet-payment {
@@ -411,68 +497,7 @@ input[type="file"] {
 }
 
 /* ============================================================
-   MOBILE-FRIENDLY OVERRIDES
-   Everything below this line targets small screens only (phones).
-   If you add new sections/fields later, add their mobile overrides
-   HERE (not scattered elsewhere) so the responsive layout stays
-   easy to track in one place.
-   ============================================================ */
-@media (max-width: 640px) {
-  /* Shrink page padding so content isn't cramped against screen edges */
-  .layout { padding: 20px 14px 60px; gap: 20px; }
-  .topbar-inner { padding: 14px 16px; flex-wrap: wrap; }
-
-
-
-  /* Preview sheet: less padding, smaller title so it doesn't dominate
-     a narrow screen. Table itself is handled by .table-scroll above —
-     it keeps min-width: 560px and scrolls sideways instead of squishing. */
-  .invoice-sheet { padding: 20px; }
-  .sheet-title { font-size: 26px; }
-  .sheet-head { flex-direction: column; gap: 10px; }
-  .sheet-meta { text-align: left; }
-
-  .sheet-footer { flex-direction: column; align-items: flex-start; gap: 16px; }
-  .footer-note { max-width: 100%; }
-  .footer-sign { text-align: left; }
-
-  /* Preview panel isn't sticky on mobile — it just flows below the form,
-     since there's no side-by-side space for it to stick to. */
-  .preview-sticky { position: static; top: auto; }
-}
-/* ============================================================
-   TABS
-   ============================================================ */
-.tab-bar {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 24px;
-  display: flex;
-  gap: 4px;
-  border-bottom: 1px solid var(--border);
-}
-.tab-btn {
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  padding: 14px 6px;
-  margin-right: 24px;
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  cursor: pointer;
-}
-.tab-btn:hover { color: var(--ink-soft); }
-.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
-
-.tab-panel { display: none; }
-.tab-panel.active { display: block; }
-
-/* ============================================================
-   TAB 2 — STUDENT DEPOSIT CALCULATOR
+   TAB 2 — KALKULATOR TITIPAN (student deposit tracker)
    ============================================================ */
 .titipan-wrap {
   max-width: 1200px;
@@ -563,13 +588,42 @@ input[type="file"] {
   padding-top: 10px;
 }
 
-/* Mobile: table header disappears, each row becomes a stacked mini-card
-   instead of squishing every column into one tight line. Column order is
-   controlled by `order:` below — Price is placed before Type here, as
-   requested, without touching the actual HTML/JS markup order. */
+.site-footer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 24px 40px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+.site-footer a { color: var(--accent); text-decoration: none; }
+.site-footer a:hover { text-decoration: underline; }
+
+/* ============================================================
+   MOBILE-FRIENDLY OVERRIDES
+   Everything below targets phones only. Add new sections' mobile
+   overrides HERE so the responsive layout stays in one place.
+   ============================================================ */
 @media (max-width: 640px) {
+  .layout { padding: 20px 14px 60px; gap: 20px; }
+  .topbar-inner { padding: 14px 16px; flex-wrap: wrap; }
+
+  .invoice-sheet { padding: 20px; }
+  .sheet-title { font-size: 26px; }
+  .sheet-head { flex-direction: column; gap: 10px; }
+  .sheet-meta { text-align: left; }
+
+  .sheet-footer { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .footer-note { max-width: 100%; }
+  .footer-sign { text-align: left; }
+
+  .preview-sticky { position: static; top: auto; }
+
   .titipan-wrap { padding: 20px 14px 60px; }
   .titipan-header { flex-direction: column; }
+
+  /* Kalkulator titipan table: header row disappears, each row becomes a
+     stacked mini-card so "Type" gets full width to type in comfortably. */
   .titipan-table thead { display: none; }
   .titipan-table, .titipan-table tbody, .titipan-table tr, .titipan-table td {
     display: block;
@@ -584,13 +638,16 @@ input[type="file"] {
     border-bottom: 1px solid var(--border);
   }
   .titipan-table td { border-bottom: none; padding: 0; }
+
   .titipan-table td:nth-child(1) { flex: 0 0 20px; order: 1; }
   .titipan-table td:nth-child(2) { flex: 1 1 45%; order: 2; }
   .titipan-table td:nth-child(4) { flex: 1 1 40%; order: 3; }
   .titipan-table td:nth-child(3) { flex: 1 1 100%; order: 4; }
   .titipan-table td:nth-child(5) { flex: 1 1 100%; order: 5; }
   .titipan-table td:nth-child(6) { flex: 0 0 auto; order: 6; margin-left: auto; }
+
   .titipan-table input { width: 100%; }
+
   .titipan-table td:nth-child(2)::before { content: "Date"; }
   .titipan-table td:nth-child(3)::before { content: "Type"; }
   .titipan-table td:nth-child(4)::before { content: "Price"; }
@@ -603,82 +660,7 @@ input[type="file"] {
     color: var(--ink-faint);
     margin-bottom: 3px;
   }
+
   .titipan-table tfoot tr { flex-wrap: nowrap; justify-content: space-between; border-bottom: none; }
-  .titipan-table tfoot td::before { content: none !important; }
-}
-
-.site-footer {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px 24px 40px;
-  text-align: center;
-  font-size: 12px;
-  color: var(--ink-faint);
-}
-.site-footer p {
-  margin: 4px 0;
-}
-.site-footer a { color: var(--accent); text-decoration: none; }
-.site-footer a:hover { text-decoration: underline; }
-
-/* ============================================================
-   ADDITIONAL MODE — toggle switch + split table
-   ============================================================ */
-.switch-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-  font-size: 13px;
-  color: var(--ink-soft);
-  cursor: pointer;
-}
-.switch { position: relative; display: inline-block; width: 38px; height: 22px; flex-shrink: 0; }
-.switch input { opacity: 0; width: 0; height: 0; }
-.switch-slider {
-  position: absolute;
-  inset: 0;
-  background: var(--border-strong);
-  border-radius: 999px;
-  transition: background 0.15s ease;
-}
-.switch-slider::before {
-  content: "";
-  position: absolute;
-  width: 16px; height: 16px;
-  left: 3px; top: 3px;
-  background: #fff;
-  border-radius: 50%;
-  transition: transform 0.15s ease;
-}
-.switch input:checked + .switch-slider { background: var(--accent); }
-.switch input:checked + .switch-slider::before { transform: translateX(16px); }
-
-/* Form row layout for Additional Fee items: Type / Date+Price / Note / remove */
-.item-row-additional {
-  grid-template-areas:
-    "type type"
-    "date price"
-    "note note"
-    "remove remove";
-}
-.item-row-additional .f-type { grid-area: type; }
-
-/* Split preview tables (Fee Tutor / Additional Fee), each 5 columns:
-   No / Date / Subject-or-Type / Note / Price. These override the default
-   6-column .sheet-table widths — must stay AFTER that block in this file. */
-.sheet-table-split th:nth-child(1), .sheet-table-split td:nth-child(1) { width: 6%; }
-.sheet-table-split th:nth-child(2), .sheet-table-split td:nth-child(2) { width: 16%; }
-.sheet-table-split th:nth-child(3), .sheet-table-split td:nth-child(3) { width: 32%; }
-.sheet-table-split th:nth-child(4), .sheet-table-split td:nth-child(4) { width: 24%; }
-.sheet-table-split th:nth-child(5), .sheet-table-split td:nth-child(5) { width: 22%; }
-
-.grand-total-row {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1.5px solid var(--ink);
-  font-weight: 600;
-  font-size: 14px;
+  .titipan-table tfoot td::before { content: none; }
 }
