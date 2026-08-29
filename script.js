@@ -226,6 +226,45 @@ el("removeQrisBtn").addEventListener("click", () => {
   renderPreview();
 });
 
+// Main table's column count depends on Additional Mode: 6 columns normally,
+// 5 when Additional Mode is on (Additional Fee column removed — that fee
+// type now lives entirely in the separate table below).
+function renderMainTable() {
+  const wrap = el("mainTableWrap");
+  if (!wrap) return;
+
+  if (!additionalMode) {
+    wrap.innerHTML = `
+      <table class="sheet-table">
+        <thead>
+          <tr>
+            <th>No</th><th>Date</th><th>Subject / Session Tutor</th><th>Note</th>
+            <th class="num">Fee Tutor</th><th class="num">Additional Fee</th>
+          </tr>
+        </thead>
+        <tbody id="prevItemsBody"></tbody>
+        <tfoot>
+          <tr class="total-row"><td colspan="5">Total Fee</td><td class="num" id="prevTotal">Rp0</td></tr>
+        </tfoot>
+      </table>
+    `;
+  } else {
+    wrap.innerHTML = `
+      <table class="sheet-table">
+        <thead>
+          <tr>
+            <th>No</th><th>Date</th><th>Subject / Session Tutor</th><th>Note</th>
+            <th class="num">Fee Tutor</th>
+          </tr>
+        </thead>
+        <tbody id="prevItemsBody"></tbody>
+        <tfoot>
+          <tr class="total-row"><td colspan="4">Total Fee</td><td class="num" id="prevTotal">Rp0</td></tr>
+        </tfoot>
+      </table>
+    `;
+  }
+}
 // ============ Preview render ============
 function renderPreview() {
   el("prevFromName").textContent = el("fromName").value || "—";
@@ -236,20 +275,31 @@ function renderPreview() {
   el("prevDate").textContent = formatDateEN(el("invoiceDate").value);
 
   // Main table: No | Date | Subject | Note | Fee Tutor | Additional Fee
+   // Main table: builds 6-col or 5-col skeleton first, depending on mode.
+  renderMainTable();
   const body = el("prevItemsBody");
-  body.innerHTML = "";
   let total = 0;
   items.forEach((item, i) => {
-    total += (Number(item.price) || 0) + (Number(item.additionalFee) || 0);
+    total += Number(item.price) || 0;
+    if (!additionalMode) total += Number(item.additionalFee) || 0;
+
     const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${i + 1}</td>
-      <td>${formatSessionDate(item.date)}</td>
-      <td>${escapeHtml(item.desc) || "—"}</td>
-      <td>${escapeHtml(item.note) || "—"}</td>
-      <td class="num">${formatRupiah(item.price)}</td>
-      <td class="num">${formatRupiah(item.additionalFee || 0)}</td>
-    `;
+    tr.innerHTML = additionalMode
+      ? `
+        <td>${i + 1}</td>
+        <td>${formatSessionDate(item.date)}</td>
+        <td>${escapeHtml(item.desc) || "—"}</td>
+        <td>${escapeHtml(item.note) || "—"}</td>
+        <td class="num">${formatRupiah(item.price)}</td>
+      `
+      : `
+        <td>${i + 1}</td>
+        <td>${formatSessionDate(item.date)}</td>
+        <td>${escapeHtml(item.desc) || "—"}</td>
+        <td>${escapeHtml(item.note) || "—"}</td>
+        <td class="num">${formatRupiah(item.price)}</td>
+        <td class="num">${formatRupiah(item.additionalFee || 0)}</td>
+      `;
     body.appendChild(tr);
   });
   el("prevTotal").textContent = formatRupiah(total);
