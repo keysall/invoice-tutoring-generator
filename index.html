@@ -62,31 +62,35 @@
       </div>
     </div>
 
-    <!-- Each item row now matches the original table design: No / Date / Subject / Note / Fee Tutor / Additional Fee.
-         Row markup itself is generated in script.js (renderItemRows) — this div is just the container. -->
-       <div class="field-group">
+    <!-- Main session table. Row markup generated in script.js (renderItemRows).
+         This is untouched by Additional Mode below — that's a separate table entirely. -->
+    <div class="field-group">
       <div class="group-header-row">
         <h2 class="group-title">3. Session Details</h2>
         <button type="button" class="btn-ghost btn-sm" id="addItemBtn">+ Add row</button>
       </div>
-      <label class="switch-row">
-        <span>Additional Mode</span>
-        <span class="switch">
-          <input type="checkbox" id="additionalModeToggle">
-          <span class="switch-slider"></span>
-        </span>
-      </label>
       <div id="itemsList" class="items-list"></div>
     </div>
 
-    <div class="field-group" id="additionalFeeGroup" hidden>
+    <!-- Additional Mode: OFF by default. Turning it on reveals this extra form
+         AND a second table in the preview below the main one. Main table above
+         is never hidden or modified by this toggle. -->
+    <div class="field-group">
       <div class="group-header-row">
-        <h2 class="group-title">3b. Additional Fee</h2>
-        <button type="button" class="btn-ghost btn-sm" id="addAdditionalItemBtn">+ Add row</button>
+        <h2 class="group-title">Additional Fee (Titipan)</h2>
+        <label class="switch-row" style="margin:0;">
+          <span>Enable</span>
+          <span class="switch">
+            <input type="checkbox" id="additionalModeToggle">
+            <span class="switch-slider"></span>
+          </span>
+        </label>
       </div>
-      <div id="additionalItemsList" class="items-list"></div>
+      <div id="additionalItemsList" class="items-list" hidden></div>
+      <button type="button" class="btn-ghost btn-sm" id="addAdditionalItemBtn" hidden>+ Add row</button>
     </div>
-    
+
+    <div class="field-group">
       <h2 class="group-title">4. Payment Method</h2>
       <label class="field">
         <span>Bank</span>
@@ -141,11 +145,56 @@
           <div><span class="label-muted">From</span> <span id="prevFromName">—</span></div>
         </div>
 
-        <!-- .table-scroll = mobile-friendly wrapper. On narrow screens the table keeps a
-             minimum width and scrolls sideways INSIDE this box, instead of squishing every
-             column until the text is unreadable. See .table-scroll + its media query in
-             style.css. Do not remove this wrapper div. -->
-        <div class="table-scroll" id="tableScroll"></div>
+        <!-- .table-scroll = mobile-friendly wrapper: table scrolls sideways inside
+             this box on narrow screens instead of squishing columns unreadable. -->
+        <div class="table-scroll">
+          <table class="sheet-table">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Date</th>
+                <th>Subject / Session Tutor</th>
+                <th>Note</th>
+                <th class="num">Fee Tutor</th>
+                <th class="num">Additional Fee</th>
+              </tr>
+            </thead>
+            <tbody id="prevItemsBody"></tbody>
+            <tfoot>
+              <tr class="total-row">
+                <td colspan="5">Total Fee</td>
+                <td class="num" id="prevTotal">Rp0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Additional Mode table: hidden unless the toggle in the form is on.
+             Only touched by script.js when additionalMode === true. -->
+        <div class="table-scroll" id="additionalTableWrap" hidden>
+          <table class="sheet-table sheet-table-additional">
+            <thead>
+              <tr>
+                <th>No</th>
+                <th>Date</th>
+                <th>Jenis Titipan</th>
+                <th class="num">Qty</th>
+                <th class="num">Harga</th>
+              </tr>
+            </thead>
+            <tbody id="prevAdditionalBody"></tbody>
+            <tfoot>
+              <tr class="total-row">
+                <td colspan="4">Total Additional</td>
+                <td class="num" id="prevAdditionalTotal">Rp0</td>
+              </tr>
+            </tfoot>
+          </table>
+          <div class="grand-total-row">
+            <span>Grand Total</span>
+            <span id="prevGrandTotal">Rp0</span>
+          </div>
+        </div>
 
         <div class="sheet-payment" id="sheetPayment">
           <div class="section-label">Payment Method</div>
@@ -172,7 +221,7 @@
 </main>
 </div>
 
-<!-- ============ TAB 2: STUDENT DEPOSIT CALCULATOR ============ -->
+<!-- ============ TAB 2: KALKULATOR TITIPAN ============ -->
 <div id="tab-titipan" class="tab-panel">
   <div class="titipan-wrap">
     <div class="titipan-header">
@@ -185,18 +234,14 @@
     <div id="clientBlocks" class="client-blocks"></div>
   </div>
 </div>
-</div>
 
-  
 <footer class="site-footer">
   <p>klo ada masalah chat tele ya <a href="https://t.me/censhie" target="_blank" rel="noopener">@censhie</a> jgn spam!</p>
   <p>𝄞⋆ ݁♪ . this site is currently under development by keysa ✮⋆˙</p>
 </footer>
 
-  
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.44.0/iconfont/tabler-icons.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="script.js"></script>
+<script src="script.js?v=4"></script>
 </body>
 </html>
