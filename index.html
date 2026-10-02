@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Invoice Generator — Your Name please <3</title>
+<title>Invoice Generator pt. 2</title>
 <meta name="description" content="simple invoice generator for tutoring sessions ˖ ݁♬⋆.˚𝄞">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,6 +23,7 @@
 <nav class="tab-bar">
   <button type="button" class="tab-btn active" data-tab="tab-invoice">Invoice</button>
   <button type="button" class="tab-btn" data-tab="tab-titipan">Kalkulator titipan</button>
+  <button type="button" class="tab-btn" data-tab="tab-tracker">Session Tracker</button>
 </nav>
 
 <div id="tab-invoice" class="tab-panel active">
@@ -54,7 +55,6 @@
           <span>Invoice number</span>
           <input type="text" id="invoiceNumber" placeholder="Client-012/2026">
         </label>
-        <!-- Invoice date = monthly billing period, NOT a single day. Input type="month" on purpose. -->
         <label class="field">
           <span>Month</span>
           <input type="month" id="invoiceDate">
@@ -62,8 +62,6 @@
       </div>
     </div>
 
-    <!-- Main session table. Row markup generated in script.js (renderItemRows).
-         This is untouched by Additional Mode below — that's a separate table entirely. -->
     <div class="field-group">
       <div class="group-header-row">
         <h2 class="group-title">3. Session Details</h2>
@@ -72,9 +70,6 @@
       <div id="itemsList" class="items-list"></div>
     </div>
 
-    <!-- Additional Mode: OFF by default. Turning it on reveals this extra form
-         AND a second table in the preview below the main one. Main table above
-         is never hidden or modified by this toggle. -->
     <div class="field-group">
       <div class="group-header-row">
         <h2 class="group-title">Additional Fee (Titipan)</h2>
@@ -93,12 +88,8 @@
     <div class="field-group">
       <h2 class="group-title">4. Payment Method</h2>
       <label class="field">
-        <span>Bank</span>
-        <input type="text" id="bankName" placeholder="cth: BCA">
-      </label>
-      <label class="field">
-        <span>Account number</span>
-        <input type="text" id="bankAccount" placeholder="1234567890">
+        <span>Bank & Account Number</span>
+        <input type="text" id="bankAccount" placeholder="cth: BCA 1234567890">
       </label>
       <label class="field">
         <span>Account holder</span>
@@ -117,11 +108,15 @@
         <span>Short message ^_^</span>
         <textarea id="closingNote" rows="2">Thank you! If there are any issues, please contact me through.</textarea>
       </label>
+      <label class="field">
+        <span>Signature name</span>
+        <input type="text" id="signatureName" placeholder="Xu Yiyang" value="Xu Yiyang">
+      </label>
     </div>
 
     <button type="button" class="btn-primary" id="downloadBtn">Download as PDF</button>
     <p class="hint-text">All data is processed &amp; auto-saved in your own browser (˶ᵔ ᵕ ᵔ˶)</p>
-    <button type="button" class="btn-ghost btn-sm" id="clearCacheBtn" style="margin:8px auto 0; display:flex;">🗑 Clear saved data</button>
+    <button type="button" class="btn-ghost btn-sm" id="clearCacheBtn" style="margin:8px auto 0; display:flex;">Clear saved data</button>
   </section>
 
   <!-- ============ PREVIEW PANEL ============ -->
@@ -145,12 +140,11 @@
           <div><span class="label-muted">From</span> <span id="prevFromName">—</span></div>
         </div>
 
-        <!-- .table-scroll = mobile-friendly wrapper: table scrolls sideways inside
-             this box on narrow screens instead of squishing columns unreadable. -->
+        <!-- Main table lives entirely inside this empty wrapper — script.js
+             (renderMainTable) rebuilds the <table> here whenever Additional
+             Mode is toggled, so the column count can change (5 vs 6 cols). -->
         <div class="table-scroll" id="mainTableWrap"></div>
 
-        <!-- Additional Mode table: hidden unless the toggle in the form is on.
-             Only touched by script.js when additionalMode === true. -->
         <div class="table-scroll" id="additionalTableWrap" hidden>
           <table class="sheet-table sheet-table-additional">
             <thead>
@@ -207,11 +201,48 @@
     <div class="titipan-header">
       <div>
         <h1 class="titipan-title">Kalkulator titipan</h1>
-        <p class="titipan-subtitle">Track items purchased on behalf of each student, with an automatic running total.</p>
+        <p class="titipan-subtitle">klo mau ngitung totalan pake ini dulu buat sementara gpp, gabakal ilang walau direfresh koq. selagi gak hapus cache browser yak</p>
       </div>
       <button type="button" class="btn-primary" id="addClientBtn" style="width:auto;">+ Add Student</button>
     </div>
+
+    <button type="button" class="summary-toggle-btn" id="titipanSummaryToggle">Summary</button>
+    <div id="titipanSummaryWrap" class="titipan-summary-wrap" hidden>
+      <table class="titipan-summary-table">
+        <thead><tr><th>Name</th><th class="num">Total</th></tr></thead>
+        <tbody id="titipanSummaryBody"></tbody>
+      </table>
+    </div>
+    
     <div id="clientBlocks" class="client-blocks"></div>
+  </div>
+</div>
+
+<!-- ============ TAB 3: SESSION TRACKER ============ -->
+<div id="tab-tracker" class="tab-panel">
+  <div class="titipan-wrap">
+    <div class="titipan-header">
+      <div>
+        <h1 class="titipan-title">Session Tracker</h1>
+        <p class="titipan-subtitle">taruh semua histori ngelesin klian disini ya gabakal hilang selagi gak hapus cache or klik clear data di main page. TOLONG TIAP MAKE DI REFRESH DULU PAGE NYA SOALNYA SERING MAINTANCE THANK YOU :DD</p>
+      </div>
+      <button type="button" class="btn-primary" id="addTrackerClientBtn" style="width:auto;">+ Add Student</button>
+    </div>
+
+    <button type="button" class="summary-toggle-btn" id="trackerSummaryToggle">Summary</button>
+    <div id="trackerSummaryWrap" class="titipan-summary-wrap" hidden>
+      <table class="titipan-summary-table">
+        <thead><tr><th>Name</th><th class="num">Total</th></tr></thead>
+        <tbody id="trackerSummaryBody"></tbody>
+      </table>
+      <div class="grand-total-row" style="max-width:420px; min-width:0;">
+        <span>Grand Total</span>
+        <span id="trackerSummaryGrandTotal">Rp0</span>
+      </div>
+    </div>
+
+    <div id="trackerClientBlocks" class="client-blocks"></div>
+
   </div>
 </div>
 
@@ -220,8 +251,8 @@
   <p>𝄞⋆ ݁♪ . this site is currently under development by keysa ✮⋆˙</p>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="script.js?v=4"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script src="script.js?v=8"></script>
 </body>
 </html>
