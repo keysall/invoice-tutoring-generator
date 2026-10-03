@@ -828,7 +828,7 @@ el("authPasswordToggle").addEventListener("click", () => {
   const btn = el("authPasswordToggle");
   const isHidden = input.type === "password";
   input.type = isHidden ? "text" : "password";
-  btn.textContent = isHidden ? "👁" : "👁‍🗨";
+  btn.textContent = isHidden ? "👁" : "👁/";
 });
 el("authCancelBtn").addEventListener("click", closeAuthModal);
 
