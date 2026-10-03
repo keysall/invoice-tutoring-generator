@@ -1,3 +1,19 @@
+// ============ Firebase (ganti dengan config kamu sendiri dari Firebase Console) ============
+const firebaseConfig = {
+  apiKey: "AIzaSyCXLU-FyQU2MjaPuatwEcmp8JbqVURCY18",
+  authDomain: "invoice-key-28ad0.firebaseapp.com",
+  projectId: "invoice-key-28ad0",
+  storageBucket: "invoice-key-28ad0.firebasestorage.app",
+  messagingSenderId: "409215803176",
+  appId: "1:409215803176:web:0c2b1197681b21163a3a1d",
+  measurementId: "G-G3T7RYCW3P"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+let currentUser = null;
+let cloudSaveTimer = null;
+
 // ============ State ============
 const STORAGE_KEY = "invoiceGeneratorState";
 
@@ -145,12 +161,50 @@ function collectState() {
   };
 }
 
+function scheduleCloudSave() {
+  if (!currentUser) return;
+  clearTimeout(cloudSaveTimer);
+  cloudSaveTimer = setTimeout(() => {
+    db.collection("users").doc(currentUser.uid).set({
+      invoice: collectState(),
+      titipan: titipanClients,
+      tracker: trackerClients,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    }, { merge: true }).catch((e) => console.warn("Cloud save failed:", e));
+  }, 1200);
+}
+
 function saveState() {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(collectState()));
+    scheduleCloudSave();
   } catch (e) {
     console.warn("Failed saving cache:", e);
   }
+}
+
+function applyInvoiceState(state) {
+  el("fromName").value = state.fromName ?? el("fromName").value;
+  el("fromContact").value = state.fromContact ?? "";
+  el("clientName").value = state.clientName ?? "";
+  el("invoiceNumber").value = state.invoiceNumber ?? "";
+  el("invoiceDate").value = state.invoiceDate ?? new Date().toISOString().slice(0, 7);
+  el("bankAccount").value = state.bankAccount ?? "";
+  el("bankHolder").value = state.bankHolder ?? "";
+  el("closingNote").value = state.closingNote ?? el("closingNote").value;
+  el("signatureName").value = state.signatureName ?? el("fromName").value;
+  if (Array.isArray(state.items) && state.items.length) items = state.items;
+  qrisDataUrl = state.qrisDataUrl || null;
+  if (qrisDataUrl) el("removeQrisBtn").hidden = false;
+
+  additionalMode = !!state.additionalMode;
+  if (Array.isArray(state.additionalItems) && state.additionalItems.length) {
+    additionalItems = state.additionalItems;
+  }
+  if (el("additionalModeToggle")) el("additionalModeToggle").checked = additionalMode;
+  if (el("additionalItemsList")) el("additionalItemsList").hidden = !additionalMode;
+  if (el("addAdditionalItemBtn")) el("addAdditionalItemBtn").hidden = !additionalMode;
+  if (el("additionalTableWrap")) el("additionalTableWrap").hidden = !additionalMode;
 }
 
 function loadState() {
@@ -397,6 +451,7 @@ let titipanClients = [
 function saveTitipanState() {
   try {
     localStorage.setItem(TITIPAN_STORAGE_KEY, JSON.stringify(titipanClients));
+    scheduleCloudSave();
   } catch (e) {
     console.warn("Failed saving titipan cache:", e);
   }
@@ -550,6 +605,7 @@ let trackerClients = [
 function saveTrackerState() {
   try {
     localStorage.setItem(TRACKER_STORAGE_KEY, JSON.stringify(trackerClients));
+    scheduleCloudSave();
   } catch (e) {
     console.warn("Failed saving tracker cache:", e);
   }
@@ -723,6 +779,70 @@ if (el("trackerSummaryToggle")) {
     if (wrap) wrap.hidden = !wrap.hidden;
   });
 }
+
+
+// ============ AUTH: Login / Sign Up / Sync ============
+function updateAuthUI() {
+  const area = el("authArea");
+  if (!area) return;
+  if (currentUser) {
+    area.innerHTML = `
+      <span class="auth-user-email">${escapeHtml(currentUser.email)}</span>
+      <button type="button" class="auth-btn" id="logoutBtn">Logout</button>
+    `;
+    el("logoutBtn").addEventListener("click", () => auth.signOut());
+  } else {
+    area.innerHTML = `<button type="button" class="auth-btn" id="loginBtn">Login</button>`;
+    el("loginBtn").addEventListener("click", openAuthModal);
+  }
+}
+
+function openAuthModal() {
+  el("authError").textContent = "";
+  el("authModal").hidden = false;
+}
+function closeAuthModal() {
+  el("authModal").hidden = true;
+}
+
+el("authCancelBtn").addEventListener("click", closeAuthModal);
+
+el("authLoginBtn").addEventListener("click", () => {
+  const email = el("authEmail").value.trim();
+  const password = el("authPassword").value;
+  auth.signInWithEmailAndPassword(email, password)
+    .then(() => closeAuthModal())
+    .catch((e) => { el("authError").textContent = e.message; });
+});
+
+el("authSignupBtn").addEventListener("click", () => {
+  const email = el("authEmail").value.trim();
+  const password = el("authPassword").value;
+  auth.createUserWithEmailAndPassword(email, password)
+    .then(() => closeAuthModal())
+    .catch((e) => { el("authError").textContent = e.message; });
+});
+
+auth.onAuthStateChanged((user) => {
+  currentUser = user;
+  updateAuthUI();
+  if (user) {
+    db.collection("users").doc(user.uid).get().then((snap) => {
+      if (snap.exists) {
+        const data = snap.data();
+        if (data.invoice) applyInvoiceState(data.invoice);
+        if (Array.isArray(data.titipan) && data.titipan.length) titipanClients = data.titipan;
+        if (Array.isArray(data.tracker) && data.tracker.length) trackerClients = data.tracker;
+      }
+      renderItemRows();
+      renderAdditionalItemRows();
+      renderPreview();
+      renderTitipan();
+      renderSessionTracker();
+    });
+  }
+});
+
 
 // ============ PDF export (native text, NOT a screenshot) ============
 // Uses jsPDF + jsPDF-AutoTable to draw real text/tables directly into the
