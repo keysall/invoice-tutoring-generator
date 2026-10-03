@@ -894,6 +894,8 @@ el("downloadBtn").addEventListener("click", () => {
   try {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit: "mm", format: "a4" });
+    doc.addFileToVFS("GreatVibes-Regular.ttf", GREATVIBES_FONT_BASE64);
+    doc.addFont("GreatVibes-Regular.ttf", "GreatVibes", "normal");
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     const margin = 15;
@@ -1082,11 +1084,10 @@ el("downloadBtn").addEventListener("click", () => {
     doc.setFontSize(8);
     doc.setTextColor(...PDF_INK_SOFT);
     doc.text("Best regards,", pageWidth - margin, y, { align: "right" });
-    doc.setFont("helvetica", "bolditalic");
-    doc.setFontSize(16);
+    doc.setFont("GreatVibes", "normal");
+    doc.setFontSize(24);
     doc.setTextColor(...PDF_LAVENDER);
-    doc.text(el("signatureName").value || "—", pageWidth - margin, y + 8, { align: "right" });
-
+    doc.text(el("signatureName").value || "—", pageWidth - margin, y + 11, { align: "right" });
     const fileName = (el("invoiceNumber").value || "invoice").replace(/[^\w-]+/g, "_");
     doc.save(`${fileName}.pdf`);
   } catch (err) {
