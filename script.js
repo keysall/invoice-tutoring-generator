@@ -914,8 +914,8 @@ el("downloadBtn").addEventListener("click", () => {
     y += 9;
 
     const mainHead = additionalMode
-      ? [["No", "Date", "Subject / Session Tutor", "Note", "Fee Tutor"]]
-      : [["No", "Date", "Subject / Session Tutor", "Note", "Fee Tutor", "Additional Fee"]];
+      ? [["No", "Date", "Subject / Session Tutor", "Fee Tutor", "Note"]]
+      : [["No", "Date", "Subject / Session Tutor", "Fee Tutor", "Note", "Additional Fee"]];
 
     let mainTotal = 0;
     const mainBody = items.map((item, i) => {
@@ -925,8 +925,8 @@ el("downloadBtn").addEventListener("click", () => {
         String(i + 1),
         formatSessionDate(item.date),
         item.desc || "—",
-        item.note || "—",
         formatRupiah(item.price),
+        item.note || "—",
       ];
       if (!additionalMode) row.push(formatRupiah(item.additionalFee || 0));
       return row;
@@ -937,17 +937,19 @@ el("downloadBtn").addEventListener("click", () => {
       head: mainHead,
       body: mainBody,
       foot: additionalMode
-        ? [["", "", "", "Total Fee", formatRupiah(mainTotal)]]
-        : [["", "", "", "", "Total Fee", formatRupiah(mainTotal)]],
+        ? [[{ content: "Total Fee", colSpan: 3 }, formatRupiah(mainTotal), ""]]
+        : [[{ content: "Total Fee", colSpan: 3 }, formatRupiah(mainTotal), "", ""]],
       theme: "grid",
       margin: { left: margin, right: margin },
       styles: { fontSize: 8.5, textColor: PDF_INK, lineColor: PDF_LAVENDER_LIGHT, lineWidth: 0.2, cellPadding: 2.2 },
       headStyles: { fillColor: PDF_LAVENDER, textColor: 255, fontStyle: "bold", fontSize: 8 },
       footStyles: { fillColor: PDF_LAVENDER_LIGHT, textColor: PDF_INK, fontStyle: "bold", fontSize: 11 },
       columnStyles: additionalMode
-        ? { 0: { cellWidth: 8 }, 2: { cellWidth: 42 }, 4: { cellWidth: 34, halign: "right" } }
-        : { 0: { cellWidth: 8 }, 2: { cellWidth: 40 }, 4: { cellWidth: 28, halign: "right" }, 5: { halign: "right" } },
+        ? { 0: { cellWidth: 8 }, 2: { cellWidth: 42 }, 3: { cellWidth: 34, halign: "right" } }
+        : { 0: { cellWidth: 8 }, 2: { cellWidth: 40 }, 3: { cellWidth: 28, halign: "right" }, 5: { halign: "right" } },
     });
+
+    
     y = doc.lastAutoTable.finalY + 10;
 
     let grandTotal = mainTotal;
