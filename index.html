@@ -16,8 +16,25 @@
   <div class="topbar-inner">
     <span class="brand">Invoice<span class="brand-accent">.</span>Key</span>
     <span class="topbar-sub">created for a tutoring session 𖹭.ᐟ</span>
+    <div id="authArea" class="auth-area">
+      <button type="button" class="auth-btn" id="loginBtn">Login</button>
+    </div>
   </div>
 </header>
+
+<div id="authModal" class="auth-modal" hidden>
+  <div class="auth-modal-box">
+    <h3>Login / Sign Up</h3>
+    <input type="email" id="authEmail" placeholder="Email">
+    <input type="password" id="authPassword" placeholder="Password">
+    <div class="auth-modal-actions">
+      <button type="button" class="btn-primary" id="authLoginBtn" style="width:auto;">Log In</button>
+      <button type="button" class="btn-ghost btn-sm" id="authSignupBtn">Sign Up</button>
+      <button type="button" class="btn-ghost btn-sm" id="authCancelBtn">Cancel</button>
+    </div>
+    <p id="authError" class="auth-error"></p>
+  </div>
+</div>
 
 <!-- ============ TABS ============ -->
 <nav class="tab-bar">
@@ -251,6 +268,10 @@
   <p>𝄞⋆ ݁♪ . this site is currently under development by keysa ✮⋆˙</p>
 </footer>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script src="script.js?v=8"></script>
