@@ -353,3 +353,13 @@ input[type="file"] { font-size: 12px; width: 100%; }
 .summary-name-link { cursor: pointer; color: var(--lavender); text-decoration: underline; }
 .summary-name-link:hover { opacity: 0.75; }
 .titipan-summary-table th:first-child, .titipan-summary-table td:first-child { width: 30px; }
+
+.password-field-wrap { position: relative; }
+.password-field-wrap input { width: 100%; padding-right: 36px; }
+.password-toggle-btn {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer; font-size: 15px;
+  color: var(--ink-faint); padding: 4px; line-height: 1;
+}
+.password-toggle-btn:hover { color: var(--lavender); }
+
