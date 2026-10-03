@@ -823,6 +823,13 @@ function closeAuthModal() {
   el("authModal").hidden = true;
 }
 
+el("authPasswordToggle").addEventListener("click", () => {
+  const input = el("authPassword");
+  const btn = el("authPasswordToggle");
+  const isHidden = input.type === "password";
+  input.type = isHidden ? "text" : "password";
+  btn.textContent = isHidden ? "👁" : "👁‍🗨";
+});
 el("authCancelBtn").addEventListener("click", closeAuthModal);
 
 el("authLoginBtn").addEventListener("click", () => {
