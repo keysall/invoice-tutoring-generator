@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Invoice Generator pt. 2</title>
-<meta name="description" content="simple invoice generator for tutoring sessions ˖ ݁♬⋆.˚𝄞">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Inter:wght@400;500;600&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
@@ -26,7 +25,10 @@
   <div class="auth-modal-box">
     <h3>Login / Sign Up</h3>
     <input type="email" id="authEmail" placeholder="Email">
-    <input type="password" id="authPassword" placeholder="Password">
+    <div class="password-field-wrap">
+      <input type="password" id="authPassword" placeholder="Password">
+      <button type="button" class="password-toggle-btn" id="authPasswordToggle" aria-label="Show password">👁</button>
+    </div>
     <div class="auth-modal-actions">
       <button type="button" class="btn-primary" id="authLoginBtn" style="width:auto;">Log In</button>
       <button type="button" class="btn-ghost btn-sm" id="authSignupBtn">Sign Up</button>
