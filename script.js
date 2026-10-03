@@ -470,10 +470,17 @@ function loadTitipanState() {
 function renderTitipanSummary() {
   const body = el("titipanSummaryBody");
   if (!body) return;
-  body.innerHTML = titipanClients.map((client) => {
+  body.innerHTML = titipanClients.map((client, idx) => {
     const total = client.items.reduce((sum, it) => sum + (Number(it.price) || 0) * (Number(it.qty) || 1), 0);
-    return `<tr><td>${escapeHtml(client.name) || "—"}</td><td class="num">${formatRupiah(total)}</td></tr>`;
+    return `<tr><td>${idx + 1}</td><td><span class="summary-name-link" data-target="titipan-client-${idx}">${escapeHtml(client.name) || "—"}</span></td><td class="num">${formatRupiah(total)}</td></tr>`;
   }).join("");
+
+  body.querySelectorAll(".summary-name-link").forEach((link) => {
+    link.addEventListener("click", () => {
+      const target = document.getElementById(link.dataset.target);
+      if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
 }
 
 function renderTitipan() {
@@ -502,8 +509,10 @@ function renderTitipan() {
 
     const total = client.items.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.qty) || 1), 0);
 
+    block.id = `titipan-client-${cIdx}`;
     block.innerHTML = `
       <div class="client-block-head">
+        <span class="client-index-badge">${cIdx + 1}</span>
         <input type="text" class="client-name-input" data-c="${cIdx}" placeholder="Student name" value="${escapeAttr(client.name || "")}">
         <button type="button" class="btn-ghost btn-sm remove-client-btn" data-c="${cIdx}">Remove student</button>
       </div>
@@ -625,12 +634,19 @@ function renderTrackerSummary() {
   const body = el("trackerSummaryBody");
   if (!body) return;
   let grandTotal = 0;
-  body.innerHTML = trackerClients.map((client) => {
+  body.innerHTML = trackerClients.map((client, idx) => {
     const total = client.items.reduce((sum, it) => sum + (Number(it.price) || 0), 0);
     grandTotal += total;
-    return `<tr><td>${escapeHtml(client.name) || "—"}</td><td class="num">${formatRupiah(total)}</td></tr>`;
+    return `<tr><td>${idx + 1}</td><td><span class="summary-name-link" data-target="tracker-client-${idx}">${escapeHtml(client.name) || "—"}</span></td><td class="num">${formatRupiah(total)}</td></tr>`;
   }).join("");
   if (el("trackerSummaryGrandTotal")) el("trackerSummaryGrandTotal").textContent = formatRupiah(grandTotal);
+
+  body.querySelectorAll(".summary-name-link").forEach((link) => {
+    link.addEventListener("click", () => {
+      const target = document.getElementById(link.dataset.target);
+      if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  });
 }
 
 function renderSessionTracker() {
@@ -658,8 +674,10 @@ function renderSessionTracker() {
 
     const total = client.items.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
 
+    block.id = `tracker-client-${cIdx}`;
     block.innerHTML = `
       <div class="client-block-head">
+        <span class="client-index-badge">${cIdx + 1}</span>
         <input type="text" class="client-name-input" data-c="${cIdx}" placeholder="Student name" value="${escapeAttr(client.name || "")}">
         <button type="button" class="btn-ghost btn-sm remove-tracker-client-btn" data-c="${cIdx}">Remove student</button>
       </div>
