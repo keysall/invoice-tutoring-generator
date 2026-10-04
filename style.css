@@ -310,9 +310,9 @@ input[type="file"] { font-size: 12px; width: 100%; }
 }
 .summary-toggle-btn:hover { opacity: 0.8; }
 
-.titipan-summary-wrap { margin-bottom: 20px; }
+.titipan-summary-wrap { margin-bottom: 20px; width: 100%; }
 .titipan-summary-table {
-  width: 100%; max-width: 560px; border-collapse: collapse; font-size: 13px;
+  width: 100%; border-collapse: collapse; font-size: 13px;
   background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
 }
 .titipan-summary-table th {
