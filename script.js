@@ -963,21 +963,28 @@ el("downloadBtn").addEventListener("click", () => {
       startY: y,
       head: mainHead,
       body: mainBody,
-      foot: additionalMode
-        ? [[{ content: "Total Fee", colSpan: 3 }, formatRupiah(mainTotal), ""]]
-        : [[{ content: "Total Fee", colSpan: 3 }, formatRupiah(mainTotal), "", ""]],
       theme: "grid",
       margin: { left: margin, right: margin },
       styles: { fontSize: 8.5, textColor: PDF_INK, lineColor: PDF_LAVENDER_LIGHT, lineWidth: 0.2, cellPadding: 2.2 },
       headStyles: { fillColor: PDF_LAVENDER, textColor: 255, fontStyle: "bold", fontSize: 8 },
-      footStyles: { fillColor: PDF_LAVENDER_LIGHT, textColor: PDF_INK, fontStyle: "bold", fontSize: 11 },
       columnStyles: additionalMode
         ? { 0: { cellWidth: 8 }, 2: { cellWidth: 42 }, 3: { cellWidth: 34, halign: "right" } }
         : { 0: { cellWidth: 8 }, 2: { cellWidth: 40 }, 3: { cellWidth: 28, halign: "right" }, 5: { halign: "right" } },
     });
+    y = doc.lastAutoTable.finalY + 8;
 
-    
-    y = doc.lastAutoTable.finalY + 10;
+    const mainTotalText = formatRupiah(mainTotal);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(15);
+    const mainTotalWidth = doc.getTextWidth(mainTotalText);
+    const mainTotalLabelWidth = doc.getTextWidth("Total Fee");
+    const mainTotalGroupWidth = mainTotalLabelWidth + 6 + mainTotalWidth;
+    const mainTotalStartX = margin + (contentWidth - mainTotalGroupWidth) / 2;
+    doc.setTextColor(...PDF_INK);
+    doc.text("Total Fee", mainTotalStartX, y);
+    doc.setTextColor(...PDF_LAVENDER);
+    doc.text(mainTotalText, mainTotalStartX + mainTotalLabelWidth + 6, y);
+    y += 10;
 
     let grandTotal = mainTotal;
     if (additionalMode) {
