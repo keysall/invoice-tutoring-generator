@@ -363,3 +363,12 @@ input[type="file"] { font-size: 12px; width: 100%; }
 }
 .password-toggle-btn:hover { color: var(--lavender); }
 
+.scroll-top-btn {
+  position: fixed; bottom: 24px; right: 20px; z-index: 50;
+  width: 44px; height: 44px; border-radius: 50%; border: none;
+  background: var(--lavender); color: #fff; font-size: 18px; font-weight: 700;
+  cursor: pointer; box-shadow: 0 2px 8px rgba(46,42,71,0.25);
+  display: flex; align-items: center; justify-content: center;
+}
+.scroll-top-btn:hover { opacity: 0.85; }
+
