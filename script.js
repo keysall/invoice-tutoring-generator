@@ -1105,3 +1105,14 @@ renderAdditionalItemRows();
 renderPreview();
 renderTitipan();
 renderSessionTracker();
+
+// ============ Scroll-to-top button (shows on all tabs after scrolling down) ============
+const scrollTopBtn = el("scrollTopBtn");
+if (scrollTopBtn) {
+  window.addEventListener("scroll", () => {
+    scrollTopBtn.hidden = window.scrollY < 300;
+  });
+  scrollTopBtn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
