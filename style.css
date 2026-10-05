@@ -312,9 +312,11 @@ input[type="file"] { font-size: 12px; width: 100%; }
 
 .titipan-summary-wrap { margin-bottom: 20px; width: 100%; }
 .titipan-summary-table {
-  width: 100%; border-collapse: collapse; font-size: 13px;
+  width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 13px;
   background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
 }
+.titipan-summary-table th:first-child, .titipan-summary-table td:first-child { width: 70%; }
+.titipan-summary-table th:last-child, .titipan-summary-table td:last-child { width: 30%; }
 .titipan-summary-table th {
   text-align: left; background: var(--lavender); color: #fff; font-weight: 600; font-size: 11px;
   text-transform: uppercase; letter-spacing: 0.02em; padding: 8px 12px;
