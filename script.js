@@ -976,7 +976,7 @@ el("downloadBtn").addEventListener("click", () => {
       margin: { left: margin, right: margin },
       styles: { fontSize: 8.5, textColor: PDF_INK, lineColor: PDF_LAVENDER_LIGHT, lineWidth: 0.2, cellPadding: 2.2 },
       headStyles: { fillColor: PDF_LAVENDER, textColor: 255, fontStyle: "bold", fontSize: 8 },
-      footStyles: { fillColor: 255, textColor: PDF_INK, fontStyle: "bold", fontSize: 12 },
+      footStyles: { fillColor: [211, 187, 255], fillOpacity: 0.75, textColor: PDF_INK, fontStyle: "bold", fontSize: 12 },
       columnStyles: additionalMode
         ? { 0: { cellWidth: 8 }, 2: { cellWidth: 42 }, 3: { cellWidth: 34, halign: "right" } }
         : { 0: { cellWidth: 8 }, 2: { cellWidth: 40 }, 3: { cellWidth: 28, halign: "right" }, 5: { halign: "right" } },
