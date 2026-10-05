@@ -220,16 +220,17 @@
     <div class="titipan-header">
       <div>
         <h1 class="titipan-title">Kalkulator titipan</h1>
-        <p class="titipan-subtitle">klo mau ngitung totalan pake ini dulu buat sementara gpp, gabakal ilang walau direfresh koq. selagi gak hapus cache browser yak</p>
+        <p class="titipan-subtitle">klo mau ngitung totalan pake ini dulu buat sementara gpp,</p>
       </div>
       <button type="button" class="btn-primary" id="addClientBtn" style="width:auto;">+ Add Student</button>
     </div>
 
     <button type="button" class="summary-toggle-btn" id="titipanSummaryToggle">Summary</button>
     <div id="titipanSummaryWrap" class="titipan-summary-wrap" hidden>
+    
       <table class="titipan-summary-table">
         <thead><tr><th>Name</th><th class="num">Total</th></tr></thead>
-        <tbody id="titipanSummaryBody"></tbody>
+        <tbody id="trackerSummaryBody"></tbody>
       </table>
     </div>
     
@@ -243,7 +244,7 @@
     <div class="titipan-header">
       <div>
         <h1 class="titipan-title">Session Tracker</h1>
-        <p class="titipan-subtitle">taruh semua histori ngelesin klian disini ya gabakal hilang selagi gak hapus cache or klik clear data di main page. TOLONG TIAP MAKE DI REFRESH DULU PAGE NYA SOALNYA SERING MAINTANCE THANK YOU :DD</p>
+        <p class="titipan-subtitle">taruh semua histori ngelesin klian disini ya jangan lupa login dulu. TOLONG TIAP MAKE DI REFRESH DULU PAGE NYA SOALNYA SERING MAINTANCE THANK YOU :DD</p>
       </div>
       <button type="button" class="btn-primary" id="addTrackerClientBtn" style="width:auto;">+ Add Student</button>
     </div>
@@ -251,7 +252,7 @@
     <button type="button" class="summary-toggle-btn" id="trackerSummaryToggle">Summary</button>
     <div id="trackerSummaryWrap" class="titipan-summary-wrap" hidden>
       <table class="titipan-summary-table">
-        <thead><tr><th>Name</th><th class="num">Total</th></tr></thead>
+        <thead><tr><th class="summary-no-col">No</th><th>Name</th><th class="num">Total</th></tr></thead>
         <tbody id="trackerSummaryBody"></tbody>
       </table>
       <div class="grand-total-row" style="max-width:420px; min-width:0;">
