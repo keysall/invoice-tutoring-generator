@@ -301,6 +301,24 @@ input[type="file"] { font-size: 12px; width: 100%; }
   }
   .titipan-table tfoot tr, .tracker-table tfoot tr { flex-wrap: nowrap; justify-content: space-between; border-bottom: none; }
   .titipan-table tfoot td::before, .tracker-table tfoot td::before { content: none !important; }
+
+  .lib-table thead { display: none; }
+  .lib-table, .lib-table tbody, .lib-table tr, .lib-table td { display: block; width: 100%; }
+  .lib-table tr { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .lib-table td { border-bottom: none; padding: 0; }
+  .lib-table td:nth-child(1) { flex: 0 0 20px; order: 1; }
+  .lib-table td:nth-child(4) { flex: 1 1 45%; order: 2; }
+  .lib-table td:nth-child(2) { flex: 1 1 100%; order: 3; }
+  .lib-table td:nth-child(3) { flex: 1 1 100%; order: 4; }
+  .lib-table td:nth-child(5) { flex: 0 0 auto; order: 5; margin-left: auto; }
+  .lib-table td:nth-child(2)::before { content: "Judul Buku"; }
+  .lib-table td:nth-child(3)::before { content: "Nama Peminjam"; }
+  .lib-table td:nth-child(4)::before { content: "Tanggal"; }
+  .lib-table td::before {
+    display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.02em;
+    color: var(--ink-faint); margin-bottom: 3px;
+  }
+  
 }
 
 .summary-toggle-btn {
@@ -376,3 +394,12 @@ input[type="file"] { font-size: 12px; width: 100%; }
 }
 .scroll-top-btn:hover { opacity: 0.85; }
 
+.lib-table {
+  width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 12px;
+}
+.lib-table th {
+  text-align: left; font-weight: 500; color: var(--ink-soft); font-size: 11px; text-transform: uppercase;
+  letter-spacing: 0.02em; padding: 0 6px 8px; border-bottom: 1.5px solid var(--ink);
+}
+.lib-table td { padding: 8px 6px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.lib-table input[type="text"], .lib-table input[type="date"] { font-size: 13px; padding: 6px 8px; width: 100%; }
