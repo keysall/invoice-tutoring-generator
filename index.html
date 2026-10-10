@@ -43,6 +43,7 @@
   <button type="button" class="tab-btn active" data-tab="tab-invoice">Invoice</button>
   <button type="button" class="tab-btn" data-tab="tab-titipan">Kalkulator titipan</button>
   <button type="button" class="tab-btn" data-tab="tab-tracker">Session Tracker</button>
+  <button type="button" class="tab-btn" data-tab="tab-pinjam">Peminjaman Buku</button>
 </nav>
 
 <div id="tab-invoice" class="tab-panel active">
@@ -265,6 +266,27 @@
   </div>
 </div>
 
+<!-- ============ TAB 4: peminjaman buku ============ -->
+<div id="tab-pinjam" class="tab-panel">
+  <div class="titipan-wrap">
+    <div class="titipan-header">
+      <div>
+        <h1 class="titipan-title">Peminjaman Buku</h1>
+        <p class="titipan-subtitle">Daftar peminjaman buku perpustakaan.</p>
+      </div>
+      <button type="button" class="btn-primary" id="addPinjamRowBtn" style="width:auto;">+ Add Row</button>
+    </div>
+    <div class="table-scroll">
+      <table class="lib-table">
+        <thead>
+          <tr><th>No</th><th>Judul Buku</th><th>Nama Peminjam</th><th>Tanggal Peminjaman</th><th>Aksi</th></tr>
+        </thead>
+        <tbody id="pinjamTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+  
 <button type="button" id="scrollTopBtn" class="scroll-top-btn" aria-label="Scroll to top" hidden>↑</button>
 
 <footer class="site-footer">
